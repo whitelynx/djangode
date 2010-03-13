@@ -1,6 +1,7 @@
 var sys = require('sys');
-process.mixin(GLOBAL, require('../utils/test').dsl);
-process.mixin(GLOBAL, require('./template_defaults'));
+var extend = require('../utils/base').extend;
+extend(GLOBAL, require('../utils/test').dsl);
+extend(GLOBAL, require('./template_defaults'));
 
 testcase('add')
     test('should add correctly', function () {

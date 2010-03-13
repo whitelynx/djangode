@@ -3,6 +3,7 @@
 
 var sys = require('sys');
 var fs = require('fs');
+var path = require('path');
 var template_system = require('./template');
 
 var cache = {};
@@ -12,17 +13,33 @@ var template_path = '/tmp';
 // TODO: get_template
     // should support subdirectories
 
+function add_to_cache(name, callback) {
+    fs.readFile(path.join(template_path, name), function (error, s) {
+        if (error) { callback(error); }
+        cache[name] = {
+            tpl: template_system.parse(s),
+            time: new Date()
+        };
+        callback(false, cache[name].tpl);
+    });
+}
+
 var load = exports.load = function (name, callback) {
     if (!callback) { throw 'loader.load() must be called with a callback'; }
 
     if (cache[name] != undefined) {
-        callback(false, cache[name]);
-    } else {
-        fs.readFile(template_path + '/' + name, function (error, s) {
-            if (error) { callback(error); }
-            cache[name] = template_system.parse(s);
-            callback(false, cache[name]);
+        fs.stat(path.join(template_path, name), function (error, stats) {
+            if (error) {
+                return callback(error);
+            }
+            if (cache[name].time > stats.mtime) {
+                callback(false, cache[name].tpl);
+            } else {
+                add_to_cache(name, callback);
+            }
         });
+    } else {
+        add_to_cache(name, callback);
     }
 };
 
