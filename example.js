@@ -1,4 +1,4 @@
-var dj = require('./djangode');
+var dj = require('./djangode/core');
 
 var app = dj.makeApp([
     ['^/$', function(req, res) {
@@ -8,7 +8,7 @@ var app = dj.makeApp([
                 <li><a href="/error">Error page with stacktrace</a></li> \
                 <li><a href="/404">Default 404</a></li> \
                 <li><a href="/redirect">Redirect back to /</a></li> \
-                <li><a href="/static-demo/hello.txt">Static hello.txt</a></li> \
+                <li><a href="/static/hello.txt">Static hello.txt</a></li> \
             </ul> \
         ');
     }],
@@ -24,9 +24,9 @@ var app = dj.makeApp([
         dj.redirect(res, '/');
     }],
     ['^/favicon\.ico$', function(req, res) {
-        dj.respond(res, 'Nothing to see here');
+        dj.respond(res, 'Nothing to see here2');
     }],
-    ['^/(static-demo/.*)$', dj.serveFile] // Serve files from static-demo/
+    ['^/(static/.*)$', dj.serveFile] // Serve files from static-demo/
 ]);
 
 dj.serve(app, 8009);
