@@ -8,7 +8,7 @@ Utility functions for node.js that imitate some useful concepts from Django.
 
 Example usage:
 
-    var dj = require('./djangode');
+    var dj = require('./djangode/core');
     dj.serve(dj.makeApp([
         ['^/$', function(req, res) {
             dj.respond(res, '<h1>Homepage</h1>');
