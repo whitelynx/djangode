@@ -1,4 +1,4 @@
-var extend = require('../utils/base').extend;
+var extend = require('./base').extend;
 extend(GLOBAL, require('./test').dsl);
 extend(GLOBAL, require('./iter'));
 
@@ -6,7 +6,7 @@ var events = require('events');
 var sys = require('sys');
 
 testcase('reduce');
-    test_async('should work like regular reduce', function (content, callback) {
+    test_async('should work like regular reduce', function (context, complete) {
         var list = [];
         //for (var i = 0; i < 400000; i++) {
         for (var i = 0; i < 1000; i++) {
@@ -20,13 +20,13 @@ testcase('reduce');
         reduce(list, function (p, c, idx, list, callback) { callback(false, p + c); }, 0,
             function (error, actual) {
                 //sys.debug(new Date() - t);
-                assertEquals(expected, actual, callback);
-                callback();
+                assertEquals(expected, actual, complete);
+                end_async_test(complete);
             }
         );
     });
 
-    test_async('should handle thrown error in iterfunction', function (content, callback) {
+    test_async('should handle thrown error in iterfunction', function (context, complete) {
         var list = [];
         for (var i = 0; i < 100; i++) {
             list.push(i);
@@ -38,13 +38,13 @@ testcase('reduce');
             function (error, actual) {
                 assertIsFalse(been_here);
                 been_here = true;
-                assertIsTrue(error, callback);
-                callback();
+                assertIsTrue(error, complete);
+                end_async_test(complete);
             }
         );
     });
 
-    test_async('should handle error returned with callback from iterfunction', function (content, callback) {
+    test_async('should handle error returned with callback from iterfunction', function (context, complete) {
         var list = [];
         for (var i = 0; i < 100; i++) {
             list.push(i);
@@ -54,10 +54,10 @@ testcase('reduce');
 
         reduce(list, function (p, c, idx, list, callback) { callback('raised error'); }, 0,
             function (error, actual) {
-                assertIsFalse(been_here, callback);
+                assertIsFalse(been_here, complete);
                 been_here = true;
-                assertIsTrue(error, callback);
-                callback();
+                assertIsTrue(error, complete);
+                end_async_test(complete);
             }
         );
     });

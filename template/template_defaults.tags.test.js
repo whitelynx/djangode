@@ -61,7 +61,7 @@ testcase('variable')
     make_parse_and_execute_test('2', '{{ obj.b }}');
     make_parse_and_execute_test('laks', '{{ obj.c.e.f }}');
     make_parse_and_execute_test('', '{{ nonexisting }}');
-    make_parse_and_execute_test('&qout;hest&qout;', '{{ qstr }}');
+    make_parse_and_execute_test('&#34;hest&#34;', '{{ qstr }}');
     make_parse_and_execute_test('HEST', '{{ "hest"|upper }}');
     make_parse_and_execute_test('16', '{{ 10|add:"6" }}');
     make_parse_and_execute_test('0', '{{ 6|add:6|add:"-12" }}');

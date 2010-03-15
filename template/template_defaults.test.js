@@ -124,7 +124,7 @@ testcase('floatformat filter');
 testcase('force_escape filter');
     test('should escape string', function () {
         assertEquals(
-            '&lt;script=&qout;alert(&#39;din mor&#39;)&qout;&gt;&lt;/script&gt;',
+            '&lt;script=&#34;alert(&#39;din mor&#39;)&#34;&gt;&lt;/script&gt;',
             filters.force_escape('<script="alert(\'din mor\')"></script>', null, {})
         );
     });

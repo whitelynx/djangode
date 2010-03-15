@@ -14,7 +14,7 @@ var escape = exports.escape = function (value) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/'/g, '&#39;')
-        .replace(/"/g, '&qout;');
+        .replace(/"/g, '&#34;');
 };
 
 /*  Function: linebreaks(value, options);
