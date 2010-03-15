@@ -1,7 +1,7 @@
-var extend = require('../utils/base').extend;
+var extend = require('../djangode/utils/base').extend;
 var sys = require('sys');
-extend(GLOBAL, require('./test').dsl);
-extend(GLOBAL, require('./date'));
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/utils/date'));
 
 
 testcase('date_format')

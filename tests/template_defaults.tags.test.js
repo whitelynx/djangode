@@ -1,10 +1,10 @@
 var sys = require('sys');
 var fs = require('fs');
-var template = require('./template');
-var extend = require('../utils/base').extend;
+var template = require('../djangode/template/template');
+var extend = require('../djangode/utils/base').extend;
 
-extend(GLOBAL, require('../utils/test').dsl);
-extend(GLOBAL, require('./template_defaults'));
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/template/template_defaults'));
 
 function write_file(path, content) {
     var file = fs.openSync(path, process.O_WRONLY | process.O_TRUNC | process.O_CREAT, 0666);
@@ -116,7 +116,7 @@ testcase('block and extend')
             + '{% block test2 %} Et cirkus{{ block.super }}{% endblock %}'
         );
 
-        var template_loader = require('./loader');
+        var template_loader = require('../djangode/template/loader');
         template_loader.flush();
         template_loader.set_path('/tmp');
 
@@ -233,7 +233,7 @@ testcase('include')
     setup(function () {
         write_file('/tmp/include_test.html', 'her er en hest{{ item }}.');
 
-        var template_loader = require('./loader');
+        var template_loader = require('../djangode/template/loader');
         template_loader.flush();
         template_loader.set_path('/tmp');
 
@@ -244,9 +244,10 @@ testcase('include')
     make_parse_and_execute_test('her er en hestgiraf.', '{% include name %}');
 
 testcase('load')
-    make_parse_and_execute_test('hestgiraf', '{% load ./load_tag_test %}{{ 100|testfilter }}');
-    make_parse_and_execute_test('hestgiraf', '{% load "./load_tag_test" %}{{ 100|testfilter }}');
-    make_parse_and_execute_test('hestgiraf', '{% load ./load_tag_test %}{% testtag %}');
+    require.paths.push(__dirname)
+    make_parse_and_execute_test('hestgiraf', '{% load load_tag_test %}{{ 100|testfilter }}');
+    make_parse_and_execute_test('hestgiraf', '{% load "load_tag_test" %}{{ 100|testfilter }}');
+    make_parse_and_execute_test('hestgiraf', '{% load load_tag_test %}{% testtag %}');
 
 testcase('templatetag')
     make_parse_and_execute_test('{%', '{% templatetag openblock %}');

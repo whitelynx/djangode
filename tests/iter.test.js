@@ -1,6 +1,6 @@
-var extend = require('./base').extend;
-extend(GLOBAL, require('./test').dsl);
-extend(GLOBAL, require('./iter'));
+var extend = require('../djangode/utils/base').extend;
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/utils/iter'));
 
 var events = require('events');
 var sys = require('sys');

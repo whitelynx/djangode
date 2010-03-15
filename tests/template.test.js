@@ -1,7 +1,7 @@
 var sys = require('sys');
-var extend = require('../utils/base').extend;
-extend(GLOBAL, require('../utils/test').dsl);
-extend(GLOBAL, require('./template'));
+var extend = require('../djangode/utils/base').extend;
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/template/template'));
 
 testcase('Test tokenizer');
     test('sanity test', function () {

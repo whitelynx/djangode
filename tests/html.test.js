@@ -1,7 +1,7 @@
-var extend = require('../utils/base').extend;
+var extend = require('../djangode/utils/base').extend;
 var sys = require('sys');
-extend(GLOBAL, require('./test').dsl);
-extend(GLOBAL, require('./html'));
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/utils/html'));
 
 testcase('tests for linebreaks()')
     test('should break lines into <p> and <br /> tags', function () {

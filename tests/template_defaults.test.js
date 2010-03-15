@@ -1,7 +1,7 @@
 var sys = require('sys');
-var extend = require('../utils/base').extend;
-extend(GLOBAL, require('../utils/test').dsl);
-extend(GLOBAL, require('./template_defaults'));
+var extend = require('../djangode/utils/base').extend;
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/template/template_defaults'));
 
 testcase('add')
     test('should add correctly', function () {

@@ -1,8 +1,8 @@
 var sys = require('sys');
-var extend = require('../utils/base').extend;
+var extend = require('../djangode/utils/base').extend;
 
-extend(GLOBAL, require('./test').dsl);
-extend(GLOBAL, require('./string'));
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/utils/string'));
 
 testcase('string utility functions');
     test('smart_split should split correctly', function () {
