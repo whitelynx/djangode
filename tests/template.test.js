@@ -164,6 +164,13 @@ testcase('parser')
         assertEquals(['comment','comment'], t.node_list.only_types('comment').map(function(x){return x.type}));
         assertEquals(['text','UNKNOWN'], t.node_list.only_types('text', 'UNKNOWN').map(function(x){return x.type}));
     });
+    test_async('should parse "%"', function (testcontext, complete) {
+        t = parse('1 % of this, this is 100% nice! %');
+        t.render({}, function (error, result) {
+            assertEquals('1 % of this, this is 100% nice! %', result, complete);
+            end_async_test( complete );
+        });
+    });
 
 testcase('nodelist evaluate');
     test_async('should work sync', function (testcontext, complete) {
