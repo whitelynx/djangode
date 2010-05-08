@@ -1,6 +1,7 @@
 var sys = require('sys');
-process.mixin(GLOBAL, require('../utils/test').dsl);
-process.mixin(GLOBAL, require('./template'));
+var extend = require('../djangode/utils/base').extend;
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/template/template'));
 
 testcase('Test tokenizer');
     test('sanity test', function () {
@@ -162,6 +163,13 @@ testcase('parser')
         t = parse('{% comment %}hest{% endcomment %}hest{% comment %}laks{% endcomment %}{% hest %}');
         assertEquals(['comment','comment'], t.node_list.only_types('comment').map(function(x){return x.type}));
         assertEquals(['text','UNKNOWN'], t.node_list.only_types('text', 'UNKNOWN').map(function(x){return x.type}));
+    });
+    test_async('should parse "%"', function (testcontext, complete) {
+        t = parse('1 % of this, this is 100% nice! %');
+        t.render({}, function (error, result) {
+            assertEquals('1 % of this, this is 100% nice! %', result, complete);
+            end_async_test( complete );
+        });
     });
 
 testcase('nodelist evaluate');

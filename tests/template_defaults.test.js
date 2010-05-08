@@ -1,6 +1,7 @@
 var sys = require('sys');
-process.mixin(GLOBAL, require('../utils/test').dsl);
-process.mixin(GLOBAL, require('./template_defaults'));
+var extend = require('../djangode/utils/base').extend;
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/template/template_defaults'));
 
 testcase('add')
     test('should add correctly', function () {
@@ -123,7 +124,7 @@ testcase('floatformat filter');
 testcase('force_escape filter');
     test('should escape string', function () {
         assertEquals(
-            '&lt;script=&qout;alert(&#39;din mor&#39;)&qout;&gt;&lt;/script&gt;',
+            '&lt;script=&#34;alert(&#39;din mor&#39;)&#34;&gt;&lt;/script&gt;',
             filters.force_escape('<script="alert(\'din mor\')"></script>', null, {})
         );
     });

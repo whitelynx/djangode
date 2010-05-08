@@ -1,10 +1,10 @@
 var sys = require('sys'),
-    dj = require('./djangode'),
-    template_system = require('./template/template');
-    template_loader = require('./template/loader');
+    dj = require('./djangode/core'),
+    template_system = require('./djangode/template/template');
+    template_loader = require('./djangode/template/loader');
 
 // set template path
-template_loader.set_path('template-demo');
+template_loader.set_path('templates');
 
 // context to use when rendering template. In a real app this would likely come from a database
 var test_context = {
@@ -35,7 +35,7 @@ var app = dj.makeApp([
     }],
 
     ['^/template$', function (req, res) {
-        dj.serveFile(req, res, 'template-demo/template.html');
+        dj.serveFile(req, res, 'templates/template.html');
     }],
 
     ['^/context$', function (req, res) {
@@ -57,12 +57,12 @@ var app = dj.makeApp([
             if (error) {
                 dj.default_show_500(req, res, error);
             } else {
-                dj.respond(res, result, 'text/plain');
+                dj.respond(res, result, 'text/html');
             }
         });
     }],
 
-    ['^/(template-demo/.*)$', dj.serveFile],
+    ['^/(templates/.*)$', dj.serveFile],
 
 ]);
 

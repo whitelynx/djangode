@@ -3,7 +3,6 @@ var sys = require('sys');
 exports.reduce = function reduce(array, iter_callback, initial, result_callback) {
 
     var index = 0;
-    var depth = 0;
 
     if (!result_callback) { throw 'no result callback!!!'; }
 

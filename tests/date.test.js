@@ -1,6 +1,7 @@
-process.mixin(GLOBAL, require('./test').dsl);
-process.mixin(GLOBAL, require('./date'));
+var extend = require('../djangode/utils/base').extend;
 var sys = require('sys');
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/utils/date'));
 
 
 testcase('date_format')

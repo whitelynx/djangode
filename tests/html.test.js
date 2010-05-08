@@ -1,5 +1,7 @@
-process.mixin(GLOBAL, require('./test').dsl);
-process.mixin(GLOBAL, require('./html'));
+var extend = require('../djangode/utils/base').extend;
+var sys = require('sys');
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/utils/html'));
 
 testcase('tests for linebreaks()')
     test('should break lines into <p> and <br /> tags', function () {

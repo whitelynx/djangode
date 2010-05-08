@@ -2,8 +2,8 @@ var http = require('http'),
     sys = require('sys'),
     fs = require('fs'),
     url = require('url'),
-    querystring = require('querystring')
-;
+    querystring = require('querystring'),
+    multipart = require('multipart');
 
 function extname(path) {
     var index = path.lastIndexOf('.');
@@ -22,12 +22,12 @@ exports.serveFile = function(req, res, filename) {
             callback();
             return;
         }
-        sys.puts("loading " + filename + "...");
+        //sys.puts("loading " + filename + "...");
         fs.readFile(filename, encoding, function (error, data) {
             if (error) {
                 status = 404;
                 body = '404'
-                sys.puts("Error loading " + filename);
+                //sys.puts("Error loading " + filename);
                 return callback();
             }
             body = data;
@@ -38,7 +38,7 @@ exports.serveFile = function(req, res, filename) {
                     : body.length
                 ]
             ];
-            sys.puts("static file " + filename + " loaded");
+            //sys.puts("static file " + filename + " loaded");
             callback();
         });
     }
@@ -75,15 +75,28 @@ exports.redirect = redirect = function(res, location, status) {
     res.close();
 }
 
-exports.extractPost = function(req, callback) {
-    req.setBodyEncoding('utf-8');
-    var body = '';
-    req.addListener('data', function(chunk) {
-        body += chunk;
-    });
-    req.addListener('end', function() {
-        callback(querystring.parse(url.parse('http://fake/?' + body).query));
-    });
+function read_arguments(req, callback) {
+    req.GET = url.parse(req.url, true).query || {};
+    if (req.method === 'POST') {
+        req.setBodyEncoding('utf-8');
+        stream = multipart.parse(req);
+        if (stream.isMultiPart) {
+            // TODO: read multipart
+            callback("Multipart support is not implemented (yet)");
+        } else {
+            var body = '';
+            req.addListener('data', function(chunk) {
+                body += chunk;
+            });
+            req.addListener('end', function() {
+                req.POST = querystring.parse(body);
+                callback(false, req);
+            });
+        }
+    } else {
+        req.POST = {};
+        callback(false, req);
+    }
 }
 
 var debuginfo = {}
@@ -117,12 +130,15 @@ exports.makeApp = function(urls, options) {
                 break;
             }
         }
-        try {
-            view.apply(null, args);
-        } catch (e) {
-            debuginfo.last_e = e;
-            show_500(req, res, e);
-        }
+        read_arguments(req, function (error) {
+            if (error) { return show_500(req, res, error); }
+            try {
+                view.apply(null, args);
+            } catch (e) {
+                debuginfo.last_e = e;
+                show_500(req, res, e);
+            }
+        });
     }
     app.urls = {};
     urls.forEach(function (item) { app.urls[item[2]] = item[0]; });

@@ -1,9 +1,10 @@
 var sys = require('sys');
 var fs = require('fs');
-var template = require('./template');
+var template = require('../djangode/template/template');
+var extend = require('../djangode/utils/base').extend;
 
-process.mixin(GLOBAL, require('../utils/test').dsl);
-process.mixin(GLOBAL, require('./template_defaults'));
+extend(GLOBAL, require('../djangode/utils/test').dsl);
+extend(GLOBAL, require('../djangode/template/template_defaults'));
 
 function write_file(path, content) {
     var file = fs.openSync(path, process.O_WRONLY | process.O_TRUNC | process.O_CREAT, 0666);
@@ -60,7 +61,7 @@ testcase('variable')
     make_parse_and_execute_test('2', '{{ obj.b }}');
     make_parse_and_execute_test('laks', '{{ obj.c.e.f }}');
     make_parse_and_execute_test('', '{{ nonexisting }}');
-    make_parse_and_execute_test('&qout;hest&qout;', '{{ qstr }}');
+    make_parse_and_execute_test('&#34;hest&#34;', '{{ qstr }}');
     make_parse_and_execute_test('HEST', '{{ "hest"|upper }}');
     make_parse_and_execute_test('16', '{{ 10|add:"6" }}');
     make_parse_and_execute_test('0', '{{ 6|add:6|add:"-12" }}');
@@ -115,7 +116,7 @@ testcase('block and extend')
             + '{% block test2 %} Et cirkus{{ block.super }}{% endblock %}'
         );
 
-        var template_loader = require('./loader');
+        var template_loader = require('../djangode/template/loader');
         template_loader.flush();
         template_loader.set_path('/tmp');
 
@@ -232,7 +233,7 @@ testcase('include')
     setup(function () {
         write_file('/tmp/include_test.html', 'her er en hest{{ item }}.');
 
-        var template_loader = require('./loader');
+        var template_loader = require('../djangode/template/loader');
         template_loader.flush();
         template_loader.set_path('/tmp');
 
@@ -243,9 +244,10 @@ testcase('include')
     make_parse_and_execute_test('her er en hestgiraf.', '{% include name %}');
 
 testcase('load')
-    make_parse_and_execute_test('hestgiraf', '{% load ./load_tag_test %}{{ 100|testfilter }}');
-    make_parse_and_execute_test('hestgiraf', '{% load "./load_tag_test" %}{{ 100|testfilter }}');
-    make_parse_and_execute_test('hestgiraf', '{% load ./load_tag_test %}{% testtag %}');
+    require.paths.push(__dirname)
+    make_parse_and_execute_test('hestgiraf', '{% load load_tag_test %}{{ 100|testfilter }}');
+    make_parse_and_execute_test('hestgiraf', '{% load "load_tag_test" %}{{ 100|testfilter }}');
+    make_parse_and_execute_test('hestgiraf', '{% load load_tag_test %}{% testtag %}');
 
 testcase('templatetag')
     make_parse_and_execute_test('{%', '{% templatetag openblock %}');
