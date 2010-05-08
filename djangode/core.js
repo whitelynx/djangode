@@ -2,8 +2,7 @@ var http = require('http'),
     sys = require('sys'),
     fs = require('fs'),
     url = require('url'),
-    querystring = require('querystring'),
-    multipart = require('multipart');
+    querystring = require('querystring');
 
 function extname(path) {
     var index = path.lastIndexOf('.');
@@ -79,20 +78,14 @@ function read_arguments(req, callback) {
     req.GET = url.parse(req.url, true).query || {};
     if (req.method === 'POST') {
         req.setBodyEncoding('utf-8');
-        stream = multipart.parse(req);
-        if (stream.isMultiPart) {
-            // TODO: read multipart
-            callback("Multipart support is not implemented (yet)");
-        } else {
-            var body = '';
-            req.addListener('data', function(chunk) {
-                body += chunk;
-            });
-            req.addListener('end', function() {
-                req.POST = querystring.parse(body);
-                callback(false, req);
-            });
-        }
+		var body = '';
+		req.addListener('data', function(chunk) {
+			body += chunk;
+		});
+		req.addListener('end', function() {
+			req.POST = querystring.parse(body);
+			callback(false, req);
+		});
     } else {
         req.POST = {};
         callback(false, req);
