@@ -42,7 +42,7 @@ exports.serveFile = function(req, res, filename) {
         });
     }
     loadResponseData(function() {
-        res.sendHeader(status, headers);
+        res.writeHeader(status, headers);
         res.write(body, encoding);
         res.close();
     });
@@ -56,7 +56,7 @@ exports.serve = function(app, port, host) {
 
 function respond(res, body, content_type, status) {
     content_type = content_type || 'text/html';
-    res.sendHeader(status || 200, {
+    res.writeHeader(status || 200, {
         'Content-Type': content_type  + '; charset=utf-8'
     });
     res.write(body, 'utf8');
@@ -66,7 +66,7 @@ exports.respond = respond;
 
 exports.redirect = redirect = function(res, location, status) {
     status = status || 301;
-    res.sendHeader(status || 200, {
+    res.writeHeader(status || 200, {
         'Content-Type': 'text/html; charset=utf-8',
         'Location': location
     });
