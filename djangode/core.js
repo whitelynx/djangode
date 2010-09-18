@@ -44,7 +44,7 @@ exports.serveFile = function(req, res, filename) {
     loadResponseData(function() {
         res.writeHead(status, headers);
         res.write(body, encoding);
-        res.close();
+        res.end();
     });
 }
 
@@ -60,7 +60,7 @@ function respond(res, body, content_type, status) {
         'Content-Type': content_type  + '; charset=utf-8'
     });
     res.write(body, 'utf8');
-    res.close();
+    res.end();
 }
 exports.respond = respond;
 
@@ -71,7 +71,7 @@ exports.redirect = redirect = function(res, location, status) {
         'Location': location
     });
     res.write('Redirecting...');
-    res.close();
+    res.end();
 }
 
 function read_arguments(req, callback) {
