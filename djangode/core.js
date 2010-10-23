@@ -77,7 +77,7 @@ exports.redirect = redirect = function(res, location, status) {
 function read_arguments(req, callback) {
     req.GET = url.parse(req.url, true).query || {};
     if (req.method === 'POST') {
-        req.setBodyEncoding('utf-8');
+        //req.setBodyEncoding('utf-8');
 		var body = '';
 		req.addListener('data', function(chunk) {
 			body += chunk;
