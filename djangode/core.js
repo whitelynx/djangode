@@ -49,8 +49,7 @@ exports.serveFile = function(req, res, filename) {
 }
 
 exports.serve = function(app, port, host) {
-	host = host || '127.0.0.1';
-    sys.puts('Server on http://' + host + ':' + port + '/');
+    sys.puts('Server on http://' + (host || "(any)") + ':' + port + '/');
     return http.createServer(app).listen(port, host);
 }
 
