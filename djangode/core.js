@@ -98,7 +98,7 @@ exports.debuginfo = debuginfo;
 exports.makeApp = function(urls, options) {
     // Compile the regular expressions
     var compiled = urls.map(function(pair) {
-        return [new RegExp(pair[0]), pair[1]];
+        return [new RegExp(pair[0], "i"), pair[1]];
     });
     options = options || {};
     var show_404 = (options.show_404 || default_show_404);
