@@ -1,10 +1,10 @@
 #!/usr/bin/python
-import re, os
+import re
 from subprocess import Popen, PIPE
 
 print ""
 
-cmd = 'find . -name "*.test.js"';
+cmd = 'find . -name "*.test.js"'
 files = Popen(cmd, shell=True, stdout=PIPE).communicate()[0].splitlines()
 failed_list = []
 
@@ -31,6 +31,6 @@ if failed_list:
         print file
     print ""
     exit(1)
+
 print ""
 exit(0)
-
