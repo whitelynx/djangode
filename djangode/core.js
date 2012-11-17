@@ -15,7 +15,7 @@ exports.serveFile = function(req, res, filename) {
     var content_type = mime.lookup(extname(filename));
     var encoding = (content_type.slice(0,4) === 'text' ? 'utf8' : 'binary');
     var status = 200;
-    
+
     function loadResponseData(callback) {
         if (body && headers) {
             callback();
@@ -149,7 +149,7 @@ function default_show_500(req, res, e) {
     var msg = ''
     if ('stack' in e && 'type' in e) {
         msg = (
-            '<p><strong>' + e.type + '</strong></p><pre>' + 
+            '<p><strong>' + e.type + '</strong></p><pre>' +
             e.stack + '</pre>'
         );
     } else {
@@ -332,3 +332,4 @@ exports.mime = mime = {
         ".zip"   : "application/zip"
     }
 };
+

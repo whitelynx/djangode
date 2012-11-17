@@ -61,7 +61,7 @@ function tokenize(input) {
         var res = consume_until("{{", "{%");
 
         if (res[0]) { token_list.push( new Token('text', res[0]) ); }
-        
+
         if (res[1] === "{{") { return variable_tag; }
         if (res[1] === "{%") { return template_tag; }
         return undefined;
@@ -130,7 +130,7 @@ var FilterExpression = function (expression, constant) {
         if (parsed.constant !== undefined) { this.constant = normalize(parsed.constant); }
         if (parsed.variable !== undefined) { this.variable = normalize(parsed.variable); }
 
-        if (parsed.filter_name) { 
+        if (parsed.filter_name) {
             this.filter_list.push( this.make_filter_token(parsed) );
         }
 
@@ -244,7 +244,7 @@ function make_nodelist() {
 extend(Parser.prototype, {
 
     parse: function () {
-    
+
         var stoppers = Array.prototype.slice.apply(arguments);
         var node_list = make_nodelist();
         var token = this.token_list[0];
@@ -333,7 +333,7 @@ extend(Context.prototype, {
 
                 if (typeof val === 'function') {
                     return val();
-                } else { 
+                } else {
                     return val;
                 }
             }

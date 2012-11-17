@@ -28,7 +28,7 @@ testcase('Test tokenizer');
 
 testcase('Filter Expression tests');
     test('should parse valid syntax', function () {
-        assertEquals( 
+        assertEquals(
             { variable: 'item', filter_list: [ { name: 'add' } ] },
             new FilterExpression("item|add")
         );

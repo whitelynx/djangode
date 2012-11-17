@@ -7,6 +7,7 @@ var path = require('path');
 var template_system = require('./template');
 
 var cache = {};
+var cacheMode = true;
 var template_path = '/tmp';
 
 
@@ -15,7 +16,9 @@ var template_path = '/tmp';
 
 function add_to_cache(name, callback) {
     fs.readFile(path.join(template_path, name), function (error, s) {
-        if (error) { callback(error); }
+        if (error) {
+            return callback(error);
+        }
         cache[name] = {
             tpl: template_system.parse(s),
             time: new Date()
@@ -27,7 +30,7 @@ function add_to_cache(name, callback) {
 var load = exports.load = function (name, callback) {
     if (!callback) { throw 'loader.load() must be called with a callback'; }
 
-    if (cache[name] != undefined) {
+    if (cacheMode && cache[name] != undefined) {
         fs.stat(path.join(template_path, name), function (error, stats) {
             if (error) {
                 return callback(error);
@@ -51,6 +54,10 @@ exports.load_and_render = function (name, context, callback) {
             template.render(context, callback);
         }
     });
+};
+
+exports.disableCache = function () {
+    cacheMode = false;
 };
 
 exports.flush = function () {
