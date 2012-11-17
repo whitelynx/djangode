@@ -1,0 +1,21 @@
+{
+  "author": "Simon Willison et al. (https://github.com/simonw)",
+  "name": "djangode",
+  "description": "Utilities functions for node.js that borrow some useful concepts from Django",
+  "version": "0.0.0",
+  "homepage": "https://github.com/whitelynx/djangode",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/whitelynx/djangode.git"
+  },
+  "main": "djangode/core.js",
+  "scripts": {
+    "test": "python tests/regression.py"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
