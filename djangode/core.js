@@ -79,14 +79,14 @@ function read_arguments(req, callback) {
     req.GET = url.parse(req.url, true).query || {};
     if (req.method === 'POST') {
         //req.setBodyEncoding('utf-8');
-		var body = '';
-		req.addListener('data', function(chunk) {
-			body += chunk;
-		});
-		req.addListener('end', function() {
-			req.POST = querystring.parse(body);
-			callback(false, req);
-		});
+        var body = '';
+        req.addListener('data', function(chunk) {
+            body += chunk;
+        });
+        req.addListener('end', function() {
+            req.POST = querystring.parse(body);
+            callback(false, req);
+        });
     } else {
         req.POST = {};
         callback(false, req);
