@@ -1,4 +1,4 @@
-var dj = require('./djangode/core');
+var dj = require('../djangode/core');
 
 var app = dj.makeApp([
     ['^/$', function(req, res) {
