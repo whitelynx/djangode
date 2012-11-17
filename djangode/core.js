@@ -1,8 +1,9 @@
-var http = require('http'),
-    util = require('util'),
-    fs = require('fs'),
-    url = require('url'),
-    querystring = require('querystring');
+var http = require('http');
+var util = require('util');
+var fs = require('fs');
+var url = require('url');
+var querystring = require('querystring');
+
 
 function extname(path) {
     var index = path.lastIndexOf('.');

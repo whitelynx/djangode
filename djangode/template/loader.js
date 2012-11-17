@@ -67,4 +67,3 @@ exports.flush = function () {
 exports.set_path = function (path) {
     template_path = path;
 };
-
