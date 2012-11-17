@@ -1,5 +1,5 @@
 var extend = require('../djangode/utils/base').extend;
-var sys = require('sys');
+var util = require('util');
 extend(GLOBAL, require('../djangode/utils/test').dsl);
 extend(GLOBAL, require('../djangode/utils/html'));
 

@@ -1,7 +1,7 @@
 /*jslint eqeqeq: true, undef: true, regexp: false */
 /*global require, process, exports, escape */
 
-var sys = require('sys');
+var util = require('util');
 var string_utils = require('../utils/string');
 var date_utils = require('../utils/date');
 var html = require('../utils/html');

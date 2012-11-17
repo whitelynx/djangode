@@ -1,7 +1,7 @@
 /*jslint laxbreak: true, eqeqeq: true, undef: true, regexp: false */
 /*global require, process, exports */
 
-var sys = require('sys');
+var util = require('util');
 
 /* Function: smart_split(s)
  *      Split a string by spaces, leaving qouted phrases together. Supports both
@@ -28,7 +28,7 @@ exports.smart_split = smart_split;
  *      Escapes qoutes in string by adding backslashes in front of them.
  */
 function add_slashes(s) {
-    return s.replace(/['"]/g, "\\$&"); 
+    return s.replace(/['"]/g, "\\$&");
 }
 exports.add_slashes = add_slashes;
 
@@ -36,7 +36,7 @@ exports.add_slashes = add_slashes;
  *      Capitalizes first letter of string
  */
 function cap_first(s) {
-    return s[0].toUpperCase() + s.substring(1); 
+    return s[0].toUpperCase() + s.substring(1);
 }
 exports.cap_first = cap_first;
 
@@ -114,7 +114,7 @@ var punct = "([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]*)";
 
 var titleCaps = function(title){
     var parts = [], split = /[:.;?!] |(?: |^)["Ò]/g, index = 0;
-    
+
     while (true) {
         var m = split.exec(title);
 
@@ -127,13 +127,13 @@ var titleCaps = function(title){
                 return punct + upper(word);
             })
             .replace(RegExp("\\b" + small + punct + "$", "ig"), upper));
-        
+
         index = split.lastIndex;
-        
+
         if ( m ) parts.push( m[0] );
         else break;
     }
-    
+
     return parts.join("").replace(/ V(s?)\. /ig, " v$1. ")
         .replace(/(['Õ])S\b/ig, "$1s")
         .replace(/\b(AT&T|Q&A)\b/ig, function(all){
@@ -167,7 +167,7 @@ exports.center = center;
 
 // from: http://phpjs.org/functions/wordwrap, all credit to authors below
 function wordwrap (str, int_width, str_break, cut) {
-    // Wraps buffer to selected number of characters using string break char  
+    // Wraps buffer to selected number of characters using string break char
     // version: 909.322
     // discuss at: http://phpjs.org/functions/wordwrap
     // +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
@@ -185,10 +185,10 @@ function wordwrap (str, int_width, str_break, cut) {
     var m = ((arguments.length >= 2) ? arguments[1] : 75   );
     var b = ((arguments.length >= 3) ? arguments[2] : "\n" );
     var c = ((arguments.length >= 4) ? arguments[3] : false);
- 
+
     var i, j, l, s, r;
- 
-    str += ''; 
+
+    str += '';
     if (m < 1) {
         return str;
     }
@@ -197,7 +197,7 @@ function wordwrap (str, int_width, str_break, cut) {
             j = c == 2 || (j = s.slice(0, m + 1).match(/\S*(\s)?$/))[1] ? m : j.input.length - j[0].length ||
                 c == 1 && m || j.input.length + (j = s.slice(m).match(/^\S*/)).input.length;
         }
-    }    
+    }
     return r.join("\n");
 }
 exports.wordwrap = wordwrap;
@@ -211,7 +211,7 @@ function replace_groups(input, replacer) {
             if (cnt === 0) {
                 out += input[i] + input[i + 1];
             }
-            i += 1; 
+            i += 1;
             continue;
         }
         if (cnt === 0 && input[i] !== '(') {
@@ -242,7 +242,7 @@ exports.regex_to_string = function (re, group_replacements) {
     // remove special chars
     s = s.replace(/\^|\$|\*|\+|\?|\.|\\cX|\\xhh|\\uhhhh|\\./g, function (m) {
         if (m[0] === '\\') {
-            if (m.substr(1).match(/f|r|n|t|v|\d+|b|s|S|w|W|d|D|b|B/)) { return ''; } 
+            if (m.substr(1).match(/f|r|n|t|v|\d+|b|s|S|w|W|d|D|b|B/)) { return ''; }
             if (m.substr(1).match(/c.|x..|u..../)) { return eval("'" + m + "'"); }
             return m[1];
         }

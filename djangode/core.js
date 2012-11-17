@@ -1,5 +1,5 @@
 var http = require('http'),
-    sys = require('sys'),
+    util = require('util'),
     fs = require('fs'),
     url = require('url'),
     querystring = require('querystring');
@@ -21,12 +21,12 @@ exports.serveFile = function(req, res, filename) {
             callback();
             return;
         }
-        //sys.puts("loading " + filename + "...");
+        //util.puts("loading " + filename + "...");
         fs.readFile(filename, encoding, function (error, data) {
             if (error) {
                 status = 404;
                 body = '404'
-                //sys.puts("Error loading " + filename);
+                //util.puts("Error loading " + filename);
                 return callback();
             }
             body = data;
@@ -37,7 +37,7 @@ exports.serveFile = function(req, res, filename) {
                     : body.length
                 ]
             ];
-            //sys.puts("static file " + filename + " loaded");
+            //util.puts("static file " + filename + " loaded");
             callback();
         });
     }
@@ -49,7 +49,7 @@ exports.serveFile = function(req, res, filename) {
 }
 
 exports.serve = function(app, port, host) {
-    sys.puts('Server on http://' + (host || "(any)") + ':' + port + '/');
+    util.puts('Server on http://' + (host || "(any)") + ':' + port + '/');
     return http.createServer(app).listen(port, host);
 }
 
@@ -111,10 +111,10 @@ exports.makeApp = function(urls, options) {
         var view = show_404;
         var args = [req, res];
         for (var pair, i = 0; pair = compiled[i]; i++) {
-            //sys.puts("Matching " + pair[0] + " against path " + path);
+            //util.puts("Matching " + pair[0] + " against path " + path);
             var match = pair[0](path);
             if (match) {
-                //sys.puts("  matched! " + match);
+                //util.puts("  matched! " + match);
                 // Add matched bits to args
                 match.slice(1).forEach(function(arg) {
                     args.push(arg);

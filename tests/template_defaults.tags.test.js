@@ -1,4 +1,4 @@
-var sys = require('sys');
+var util = require('util');
 var fs = require('fs');
 var template = require('../djangode/template/template');
 var extend = require('../djangode/utils/base').extend;

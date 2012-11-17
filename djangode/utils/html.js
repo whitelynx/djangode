@@ -1,7 +1,7 @@
 /*jslint laxbreak: true, eqeqeq: true, undef: true, regexp: false */
 /*global require, process, exports */
 
-var sys = require('sys');
+var util = require('util');
 
 /*  Function: escape(value);
         Escapes the characters &, <, >, ' and " in string with html entities.

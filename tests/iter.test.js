@@ -3,7 +3,7 @@ extend(GLOBAL, require('../djangode/utils/test').dsl);
 extend(GLOBAL, require('../djangode/utils/iter'));
 
 var events = require('events');
-var sys = require('sys');
+var util = require('util');
 
 testcase('reduce');
     test_async('should work like regular reduce', function (context, complete) {
@@ -15,11 +15,11 @@ testcase('reduce');
 
         //var t = new Date();
         var expected = list.reduce(function (p, c) { return p + c; }, 0);
-        //sys.debug(new Date() - t);
+        //util.debug(new Date() - t);
 
         reduce(list, function (p, c, idx, list, callback) { callback(false, p + c); }, 0,
             function (error, actual) {
-                //sys.debug(new Date() - t);
+                //util.debug(new Date() - t);
                 assertEquals(expected, actual, complete);
                 end_async_test(complete);
             }

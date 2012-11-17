@@ -1,4 +1,4 @@
-var sys = require('sys');
+var util = require('util');
 var extend = require('../djangode/utils/base').extend;
 extend(GLOBAL, require('../djangode/utils/test').dsl);
 extend(GLOBAL, require('../djangode/template/template_defaults'));

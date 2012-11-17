@@ -1,4 +1,4 @@
-var sys = require('sys');
+var util = require('util');
 
 // Internationalization strings
 var i18n = {
@@ -49,7 +49,7 @@ var time_format_flags = {
     P: function (d) {
         var h = d.getHours(), m = d.getMinutes();
         if (m === 0 && h === 0) { return cur_i18n.special_times[0]; }
-        if (m === 0 && h === 12) { return cur_i18n.special_times[1]; } 
+        if (m === 0 && h === 12) { return cur_i18n.special_times[1]; }
         return time_format_flags.f(d) + ' ' + time_format_flags.a(d);
     },
     s: function (d) { return pad(d.getSeconds()); },
@@ -84,7 +84,7 @@ var date_format_flags = {
         var o = d.getTimezoneOffset();
         return (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4);
     },
-    r: function (d) {   
+    r: function (d) {
        return date_format_flags.D(d) + ', ' + d.getDate() + ' ' + date_format_flags.M(d) + ' ' +
               d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' +
               pad(d.getSeconds()) + ' ' + date_format_flags.O(d);
@@ -102,7 +102,7 @@ var date_format_flags = {
     },
     U: function (d) { return Math.floor(d.getTime() / 1000); },
     w: function (d) { return d.getDay(); },
-    W: function (d) {   
+    W: function (d) {
         // week algorithm from http://www.merlyn.demon.co.uk/weekcalc.htm#JS
         var weekday = d.getDay() || 7;
         var clone = new Date(d);
@@ -186,7 +186,7 @@ function timespan_to_str(timespan) {
         // hours
         1000 * 60 * 60,
         // minutes
-        1000 * 60,    
+        1000 * 60,
     ];
 
     chunks.forEach(function (x, idx) {

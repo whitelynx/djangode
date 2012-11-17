@@ -1,4 +1,4 @@
-var sys = require('sys');
+var util = require('util');
 
 exports.reduce = function reduce(array, iter_callback, initial, result_callback) {
 
@@ -11,7 +11,7 @@ exports.reduce = function reduce(array, iter_callback, initial, result_callback)
         if (error) {
             return result_callback(error);
         }
-        
+
         if (index < array.length) {
             process.nextTick( function () {
                 try {
