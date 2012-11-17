@@ -112,7 +112,7 @@ exports.makeApp = function(urls, options) {
         var args = [req, res];
         for (var pair, i = 0; pair = compiled[i]; i++) {
             //util.puts("Matching " + pair[0] + " against path " + path);
-            var match = pair[0](path);
+            var match = pair[0].exec(path);
             if (match) {
                 //util.puts("  matched! " + match);
                 // Add matched bits to args
