@@ -56,7 +56,7 @@ var truncate_html_words = exports.truncate_html_words = function (input, cnt) {
     re_words.lastIndex = 0;
 
     while (words <= length) {
-        var m = re_words( input );
+        var m = re_words.exec(input);
         if (!m) {
             // parsed through string
             break;
@@ -128,7 +128,7 @@ function urlize(text, options) {
     words.forEach( function (word, i, words) {
         var match;
         if (word.indexOf('.') > -1 || word.indexOf('@') > -1 || word.indexOf(':') > -1) {
-            match = punctuation_re(word);
+            match = punctuation_re.exec(word);
         }
 
         if (match) {
