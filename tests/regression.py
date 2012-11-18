@@ -26,7 +26,7 @@ resultLineRE = re.compile(
         )
 
 testStatusRE = re.compile(
-        r'''^(\[)(Testcase)(: )(.*)(\])$
+        r'''^(\[)(Testcase)(:[ ])(.*)(\])$
             | ^(\s+)(\[)(!!)(\])(.*)(error\.)(.*)
                 ((?:\n(?:(?:[^ -]|[ ][^\[-]|---?[^-]).*)?)*)
             | ^(\s+)(\[)(--)(\])(.*)(failed\.)(.*\n)
