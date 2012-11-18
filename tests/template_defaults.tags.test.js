@@ -118,7 +118,7 @@ testcase('block and extend')
         );
 
         var template_loader = require('../djangode/template/loader');
-        template_loader.flush();
+        template_loader.flush_cache();
         template_loader.set_path('/tmp');
 
         return { obj: { parent: 'block_test_2.html' } };
@@ -235,7 +235,7 @@ testcase('include')
         write_file('/tmp/include_test.html', 'her er en hest{{ item }}.');
 
         var template_loader = require('../djangode/template/loader');
-        template_loader.flush();
+        template_loader.flush_cache();
         template_loader.set_path('/tmp');
 
         return { obj: { name: 'include_test.html', item: 'giraf' } };
