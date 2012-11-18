@@ -96,6 +96,11 @@ function add_path(path)
     template_path.push(path);
 }
 
+function get_path()
+{
+    return template_path.slice(0);
+}
+
 
 // --------------------------------------------------------------------------------------------------------------------
 // Filesystem-backed template
@@ -289,4 +294,5 @@ module.exports = {
     'flush_cache': flush_cache,
     'set_path': set_path,
     'add_path': add_path,
+    'get_path': get_path,
 };
