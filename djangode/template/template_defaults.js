@@ -7,6 +7,7 @@ var date_utils = require('../utils/date');
 var html = require('../utils/html');
 var iter = require('../utils/iter');
 var extend = require('../utils/base').extend;
+var paths = require('../utils/paths');
 
 extend(GLOBAL, require('../utils/tags'));
 
@@ -816,7 +817,18 @@ var tags = exports.tags = {
             name = name.substr(1, name.length - 2);
         }
 
-        var package = require(name);
+        var loader = require('./loader');
+
+        console.log(loader.get_path());
+        var fullPath = paths.find_file_sync(name, loader.get_path());
+        console.log(fullPath);
+        if(!fullPath)
+        {
+            fullPath = paths.find_file_sync(name + '.js', loader.get_path());
+            console.log(fullPath);
+        }
+
+        var package = require(fullPath);
         extend(parser.tags, package.tags);
 
         return nodes.LoadNode(name, package);
