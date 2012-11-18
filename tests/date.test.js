@@ -45,7 +45,7 @@ testcase('date_format')
         assertEquals('29', format_date(new Date(2000, 1, 3), 't'));
         assertEquals('28', format_date(new Date(1999, 1, 3), 't'));
 
-        assertEquals('GMT+0100', format_date(d, 'T')); // good enough for now...
+        assertEquals('GMT' + tz, format_date(d, 'T')); // good enough for now...
         assertEquals('376162305', format_date(d, 'U'));
         assertEquals('3', format_date(d, 'w'));
         assertEquals('49', format_date(d, 'W'));
