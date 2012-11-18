@@ -4,7 +4,10 @@
 var util = require('util');
 var fs = require('fs');
 var path = require('path');
+
 var template_system = require('./template');
+var paths = require('../utils/paths');
+
 
 var cache = {};
 var cache_enabled = true;
@@ -123,34 +126,12 @@ FSTemplate.prototype.find_source = function (callback)
     {
         throw 'FSTemplate.find_source() must be called with a callback';
     }
-    // Ensure callbacks can use the same 'self' ('this' changes depending on how the callback is called!)
-    var self = this;
 
-    var templateDirs = template_path.slice(0);  // Copy the template_path array.
-
-    function tryNextPathEntry()
-    {
-        if(templateDirs.length == 0)
-        {
-            callback(util.format('No template found for name %j', self.name));
-        }
-
-        var fullPath = path.join(templateDirs.shift(), self.name);
-        fs.stat(fullPath,
-                function (error, stats)
-                {
-                    if(error)
-                    {
-                        tryNextPathEntry();
-                    }
-                    else
-                    {
-                        callback(null, fullPath, stats.mtime);
-                    }
-                });
-    };
-
-    tryNextPathEntry();
+    paths.find_file(this.name, template_path,
+            function (error, fullPath, stats)
+            {
+                callback(error, fullPath, stats.mtime);
+            });
 };
 
 /**
