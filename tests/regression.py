@@ -18,6 +18,13 @@ def error(msg, *args, **kwargs):
         out('\033[1;31m{}\033[m'.format(msg), *args, **kwargs)
 
 
+def title(text):
+    if platform.system() == 'Windows':
+        out(text)
+    else:
+        out('\033[4;96m{}\033[m', text)
+
+
 print()
 
 resultLineRE = re.compile(
@@ -38,7 +45,7 @@ testStatusRE = re.compile(
         re.MULTILINE | re.VERBOSE
         )
 testStatusColors = {
-        'Testcase': '96',  # bright cyan
+        'Testcase': '94',  # bright cyan
 
         'OK': '1;32',  # bold green
         '!!': '1;31',  # bold red
@@ -94,7 +101,7 @@ for root, dirs, files in os.walk(testDir):
 
         fullPath = join(root, testFile)
         relativePath = relpath(fullPath, testDir)
-        out(relativePath)
+        title(relativePath)
 
         output = Popen(['node', fullPath], stdout=PIPE).communicate()[0]
 
