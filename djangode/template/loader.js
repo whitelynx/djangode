@@ -48,7 +48,7 @@ function load(name, callback)
     {
         add_to_cache(name, callback);
     }
-};
+}
 
 function load_and_render(name, context, callback)
 {
@@ -64,22 +64,22 @@ function load_and_render(name, context, callback)
                     template.render(context, callback);
                 }
             });
-};
+}
 
 function disable_cache()
 {
     cache_enabled = false;
-};
+}
 
 function enable_cache()
 {
     cache_enabled = true;
-};
+}
 
 function flush_cache()
 {
     cache = {};
-};
+}
 
 function set_path(path)
 {
@@ -89,12 +89,12 @@ function set_path(path)
     }
 
     template_path = path;
-};
+}
 
 function add_path(path)
 {
     template_path.push(path);
-};
+}
 
 
 // --------------------------------------------------------------------------------------------------------------------
