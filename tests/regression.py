@@ -25,6 +25,65 @@ resultLineRE = re.compile(
         re.IGNORECASE | re.MULTILINE
         )
 
+testStatusRE = re.compile(
+        r'''^(\[)(Testcase)(: )(.*)(\])$
+            | ^(\s+)(\[)(!!)(\])(.*)(error\.)(.*)
+                ((?:\n(?:(?:[^ -]|[ ][^\[-]|---?[^-]).*)?)*)
+            | ^(\s+)(\[)(--)(\])(.*)(failed\.)(.*\n)
+                (Expected:)(.*\n)
+                (Actual:)(.*\n)
+            | ^(\s+)(\[)(OK)(\])(.*)(passed)(.*)$
+            | ^(----)$
+            ''',
+        re.MULTILINE | re.VERBOSE
+        )
+testStatusColors = {
+        'Testcase': '96',  # bright cyan
+
+        'OK': '1;32',  # bold green
+        '!!': '1;31',  # bold red
+        '--': '1;31',  # bold red
+
+        'passed': '1;32',  # bold green
+        'error.': '1;31',  # bold red
+        'failed.': '1;31',  # bold red
+
+        'Expected:': '93',  # bright yellow
+        'Actual:': '93',  # bright yellow
+
+        '[': '90',  # dark grey ('bright black')
+        ']': '90',  # dark grey ('bright black')
+        ': ': '90',  # dark grey ('bright black')
+        '----': '90',  # dark grey ('bright black')
+        }
+
+
+def colorizeTestStatus(match):
+    if platform.system() == 'Windows':
+        return match.group()
+
+    else:
+        sections = match.groups()
+
+        defaultColor = ''
+        if 'Testcase' in sections:
+            defaultColor = '4'  # underlined
+        elif 'OK' in sections:
+            defaultColor = '97'  # bright white
+        elif '--' in sections:
+            defaultColor = '97'  # bright white
+        elif '!!' in sections:
+            defaultColor = '1;31'  # bold red
+
+        colored = []
+        for section in sections:
+            if section is not None:
+                color = testStatusColors.get(section, defaultColor)
+                colored.append('\033[{}m{}\033[m'.format(color, section))
+
+        return ''.join(colored)
+
+
 testDir = dirname(__file__)
 failed_list = []
 
@@ -49,12 +108,13 @@ for root, dirs, files in os.walk(testDir):
 
             if failures > 0 or errors > 0:
                 failed_list.append((relativePath, failures, errors))
-                error('\t{}', match.group().strip())
+                out('\n{}\n', testStatusRE.sub(colorizeTestStatus, output))
             else:
                 out('\t{}', match.group().strip())
+                continue
 
         else:
-            error('\tNo totals returned by test! Full output:\n{}', '\n'.join(output))
+            error('\tNo totals returned by test! Full output:\n\n{}\n', output)
 
 if failed_list:
     error('\nWARNING! There were failed tests:')
