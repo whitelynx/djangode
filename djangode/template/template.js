@@ -1,11 +1,16 @@
 /*jslint laxbreak: true, eqeqeq: true, undef: true, regexp: false */
-/*global require, process, exports */
+/*global require, process, module */
 
 var util = require('util');
 var string_utils = require('../utils/string');
 var html = require('../utils/html');
 var iter = require('../utils/iter');
 var extend = require('../utils/base').extend;
+
+
+function parse(input) {
+    return new Template(input);
+};
 
 function normalize(value) {
     if (typeof value !== 'string') { return value; }
@@ -99,7 +104,7 @@ function tokenize(input) {
 // groups are: 1=variable, 2=constant, 3=filter_name, 4=filter_constant_arg, 5=filter_variable_arg
 var filter_re = /("[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')|([\w\.]+|[\-+\.]?\d[\d\.e]*)|(?:\|(\w+)(?::(?:("[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')|([\w\.]+|[\-+\.]?\d[\d\.e]*)))?)/g;
 
-var FilterExpression = function (expression, constant) {
+function FilterExpression(expression, constant) {
 
     filter_re.lastIndex = 0;
 
@@ -383,17 +388,12 @@ extend(Template.prototype, {
 
 /********************************************************/
 
-exports.parse = function (input) {
-    return new Template(input);
+module.exports = {
+    'parse': parse,
+
+    // exported for test
+    'Context': Context,
+    'FilterExpression': FilterExpression,
+    'tokenize': tokenize,
+    'make_nodelist': make_nodelist,
 };
-
-
-// exported for test
-exports.Context = Context;
-exports.FilterExpression = FilterExpression;
-exports.tokenize = tokenize;
-exports.make_nodelist = make_nodelist;
-
-
-
-
