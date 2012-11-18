@@ -73,7 +73,7 @@ var truncate_html_words = exports.truncate_html_words = function (input, cnt) {
             continue;
         }
 
-        var tag = re_tag( m[0] );
+        var tag = re_tag.exec( m[0] );
         if (!tag || elipsis_pos) {
             // don't worry about non-tags or tags after truncate point
             continue;
@@ -139,7 +139,7 @@ function urlize(text, options) {
               middle.indexOf('@') === -1 && middle && middle[0].match(/[a-z0-9]/i) &&
               (middle.substr(-4) === '.org' || middle.substr(-4) === '.net' || middle.substr(-4) === '.com'))) {
                 url = encodeURI('http://' + middle);
-            } else if (middle.indexOf('@') > -1 && middle.indexOf(':') === -1 && simple_email_re(middle)) {
+            } else if (middle.indexOf('@') > -1 && middle.indexOf(':') === -1 && simple_email_re.exec(middle)) {
                 url = 'mailto:' + middle;
                 nofollow = '';
             }
