@@ -2,7 +2,6 @@ var util = require('util');
 var fs = require('fs');
 var template = require('../djangode/template/template');
 var extend = require('../djangode/utils/base').extend;
-var template_loader = require('../djangode/template/loader');
 
 extend(GLOBAL, require('../djangode/utils/test').dsl);
 extend(GLOBAL, require('../djangode/template/template_defaults'));
@@ -245,7 +244,14 @@ testcase('include')
     make_parse_and_execute_test('her er en hestgiraf.', '{% include name %}');
 
 testcase('load')
-    template_loader.set_path(__dirname);
+    setup(function () {
+        var template_loader = require('../djangode/template/loader');
+        template_loader.flush_cache();
+        template_loader.set_path([__dirname]);
+
+        return { obj: {} };
+    })
+
     make_parse_and_execute_test('hestgiraf', '{% load load_tag_test %}{{ 100|testfilter }}');
     make_parse_and_execute_test('hestgiraf', '{% load "load_tag_test" %}{{ 100|testfilter }}');
     make_parse_and_execute_test('hestgiraf', '{% load load_tag_test %}{% testtag %}');
