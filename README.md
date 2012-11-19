@@ -23,4 +23,11 @@ dj.serve(dj.makeApp([
 ]), 8008); // Serves on port 8008
 ```
 
-Run "node example.js" for a slightly more interesting example.
+Run `node examples/example.js` for a slightly more interesting example.
+
+
+Templates
+---------
+
+djangode provides an implementation of Django's template system; see `TEMPLATES.md` for more information, and run
+`node examples/template_example.js` for an example.
