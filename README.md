@@ -8,7 +8,7 @@ Utility functions for [node.js][] that imitate some useful concepts from [Django
 
 Example usage:
 
-```
+```javascript
 var dj = require('./djangode/core');
 dj.serve(dj.makeApp([
 	['^/$', function(req, res) {
