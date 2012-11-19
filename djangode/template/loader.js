@@ -7,6 +7,7 @@ var path = require('path');
 
 var template_system = require('./template');
 var paths = require('../utils/paths');
+var errors = require('../utils/errors');
 
 
 var cache = {};
@@ -138,6 +139,13 @@ FSTemplate.prototype.find_source = function (callback)
     paths.find_file(this.name, template_path,
             function (error, fullPath, stats)
             {
+                if(error instanceof errors.FileNotFound)
+                {
+                    templateError = new TemplateNotFound(template, template_path);
+                    templateError.inner = error;
+                    error = templateError;
+                }
+
                 callback(error, fullPath, stats.mtime);
             });
 };
@@ -246,6 +254,7 @@ FSTemplate.prototype.cache_is_current = function (callback)
         callback(null, false);
     }
 };
+
 
 // --------------------------------------------------------------------------------------------------------------------
 // Private helpers
