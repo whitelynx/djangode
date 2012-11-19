@@ -1,6 +1,5 @@
 var util = require('util');
 var dj = require('../djangode/core');
-var template_system = require('../djangode/template/template');
 var template_loader = require('../djangode/template/loader');
 
 // set template path
