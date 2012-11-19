@@ -37,7 +37,8 @@ function load(name, callback)
                     {
                         return callback(error);
                     }
-                    if (cache[name].loaded_at > stats.mtime)
+
+                    if (cache[name].last_mtime == stats.mtime)
                     {
                         callback(null, cache[name].tpl);
                     }
@@ -53,6 +54,13 @@ function load(name, callback)
     }
 }
 
+/**
+ * Render the given template, loading or re-loading it if necessary.
+ *
+ * @param name      the name of the template
+ * @param context   the context to use when rendering the template
+ * @param callback  function(error, output)
+ */
 function load_and_render(name, context, callback)
 {
     load(name,
@@ -154,7 +162,13 @@ FSTemplate.prototype.load = function (callback) {
                     return callback(error);
                 }
 
-                load_template_from(self, fullPath, callback);
+                load_template_from(self, fullPath,
+                        function(error, template)
+                        {
+                            template.last_mtime = mtime;
+
+                            callback(error, template)
+                        });
             });
 };
 
@@ -162,7 +176,7 @@ FSTemplate.prototype.load = function (callback) {
  * Render the template, re-loading it if necessary.
  *
  * @param context   the context to use when rendering the template
- * @param callback  function(error, rendered)
+ * @param callback  function(error, output)
  */
 FSTemplate.prototype.render = function (context, callback) {
     if(!callback)
@@ -179,17 +193,19 @@ FSTemplate.prototype.render = function (context, callback) {
                     return callback(error);
                 }
 
-                if(self.full_path != fullPath || self.loaded_at < mtime)
+                if(self.full_path != fullPath || self.last_mtime != mtime)
                 {
                     load_template_from(self, fullPath,
                             function(error, template)
                             {
+                                template.last_mtime = mtime;
+
                                 if(error)
                                 {
                                     return callback(error);
                                 }
 
-                                self.loaded_template.render(context, callback);
+                                template.loaded_template.render(context, callback);
                             });
                 }
                 else
@@ -212,7 +228,7 @@ FSTemplate.prototype.cache_is_current = function (callback)
     }
     var self = this;
 
-    if (cache_enabled && self.loaded_at instanceof Date)
+    if (cache_enabled && self.last_mtime instanceof Date)
     {
         self.find_source(
                 function (error, fullPath, mtime)
@@ -222,7 +238,7 @@ FSTemplate.prototype.cache_is_current = function (callback)
                         return callback(error);
                     }
 
-                    callback(null, mtime <= self.loaded_at);
+                    callback(null, mtime == self.last_mtime);
                 });
     }
     else
@@ -254,7 +270,6 @@ function load_template_from(template, fullPath, callback)
 
                 template.fullPath = fullPath;
                 template.loaded_template = template_system.parse(s);
-                template.loaded_at = new Date();
 
                 callback(null, template);
             });
