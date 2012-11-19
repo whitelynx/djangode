@@ -1,7 +1,7 @@
 Djangode Templates
 ==================
 
-The templatesystem is a complete port of the real Django template system
+The template system is a complete port of the real Django template system
 implemented for node.js. It uses the same syntax and it supports (almost) all
 the default Django (version 1.1)  template tags and filters, so if you are used
 to writing Django templates, you can jump right in!
@@ -33,10 +33,10 @@ For now, let's look at how to use the templatesystem with Djangode and Node.js:
     ]);
     dj.serve(app, 8000);
 
-The parse() function parses a string into a template object, and the template
-objects render() function renders the template with a context.
+The `parse()` function parses a string into a template object, and the template
+object's `render()` function renders the template with a context.
 
-The render() function uses the same callback style as the node.js standard API
+The `render()` function uses the same callback style as the node.js standard API
 function; The last argument is a callback that is executed when the template is
 rendered, and the first argument to the callback is an error flag that is
 raised if something goes wrong. The result is passed along as the second
@@ -46,7 +46,7 @@ Template loader
 ---------------
 
 Most of the time you do not want to serve your templates from strings, you will
-want to keep them in files and use the template_loader module.
+want to keep them in files and use the `template_loader` module.
 
     var dj = require('./djangode'),
         template = require('./template/template'),
@@ -72,7 +72,7 @@ want to keep them in files and use the template_loader module.
 
 Now, the template will be rendered from the ./template.html file. The above
 chaining of load and render is pretty common so you could use the
-load_and_render shortcut:
+`load_and_render` shortcut:
 
     loader.load_and_render('template.html', context, function (error, result) {
         if (error) {
