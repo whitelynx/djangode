@@ -103,7 +103,7 @@ for root, dirs, files in os.walk(testDir):
         relativePath = relpath(fullPath, testDir)
         title(relativePath)
 
-        output = Popen(['node', fullPath], stdout=PIPE).communicate()[0]
+        output = Popen(['node', fullPath], stdout=PIPE, universal_newlines=True).communicate()[0]
 
         with open(fullPath + '.log', 'w') as testLog:
             testLog.write(output)
