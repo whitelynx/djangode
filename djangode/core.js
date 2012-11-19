@@ -5,6 +5,24 @@ var url = require('url');
 var querystring = require('querystring');
 
 
+// Template
+exports.template = require('./template/template');
+exports.template.loader = require('./template/loader');
+
+// Utils
+exports.utils = {
+    'base': require('./utils/base'),
+    'date': require('./utils/date'),
+    'errors': require('./utils/errors'),
+    'html': require('./utils/html'),
+    'iter': require('./utils/iter'),
+    'paths': require('./utils/paths'),
+    'string': require('./utils/string'),
+    'tags': require('./utils/tags'),
+    'test': require('./utils/test'),
+};
+
+
 function extname(path) {
     var index = path.lastIndexOf('.');
     return index < 0 ? '' : path.substring(index);
