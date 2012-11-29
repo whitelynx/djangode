@@ -269,19 +269,26 @@ FSTemplate.prototype.cache_is_current = function (callback)
  */
 function load_template_from(template, fullPath, callback)
 {
-    fs.readFile(fullPath,
-            function (error, s)
-            {
-                if(error)
-                {
-                    return callback(error);
-                }
+	if(fullPath)
+	{
+		fs.readFile(fullPath,
+				function (error, s)
+				{
+					if(error)
+					{
+						return callback(error);
+					}
 
-                template.fullPath = fullPath;
-                template.loaded_template = template_system.parse(s);
+					template.fullPath = fullPath;
+					template.loaded_template = template_system.parse(s);
 
-                callback(null, template);
-            });
+					callback(null, template);
+				});
+	}
+	else
+	{
+		callback(new Error(util.format("Invalid template path: %s", util.inspect(fullPath))));
+	}
 }
 
 function add_to_cache(name, callback)
