@@ -9,7 +9,7 @@ function BaseError(name, level /*, message, ...*/)
 {
 	this.name = name;
 	this.level = level;
-	this.message = util.format.apply(this, arguments.slice(2))
+	this.message = util.format.apply(this, Array.prototype.slice(arguments, [2]))
     this.htmlMessage = util.format('<h2>%s</h2><p>%s</p>', name, this.message);
 
     Error.call(this);
