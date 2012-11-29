@@ -26,6 +26,7 @@ function find_file(filename, directories, callback)
         if(templateDirs.length == 0)
         {
             callback(errors.FileNotFound(filename, directories));
+            return;
         }
 
         var fullPath = path.join(templateDirs.shift(), filename);
