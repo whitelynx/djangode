@@ -146,7 +146,7 @@ FSTemplate.prototype.find_source = function (callback)
                     error = templateError;
                 }
 
-                callback(error, fullPath, stats.mtime);
+                callback(error, fullPath, stats ? stats.mtime : undefined);
             });
 };
 
