@@ -31,23 +31,7 @@ function load(name, callback)
 
     if (cache_enabled && cache[name] != undefined)
     {
-        fs.stat(path.join(template_path, name),
-                function (error, stats)
-                {
-                    if (error)
-                    {
-                        return callback(error);
-                    }
-
-                    if (cache[name].last_mtime == stats.mtime)
-                    {
-                        callback(null, cache[name].tpl);
-                    }
-                    else
-                    {
-                        add_to_cache(name, callback);
-                    }
-                });
+        callback(null, cache[name]);
     }
     else
     {
