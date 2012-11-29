@@ -209,12 +209,12 @@ FSTemplate.prototype.render = function (context, callback) {
                     load_template_from(self, fullPath,
                             function(error, template)
                             {
-                                template.last_mtime = mtime;
-
                                 if(error)
                                 {
                                     return callback(error);
                                 }
+
+                                template.last_mtime = mtime;
 
                                 template.loaded_template.render(context, callback);
                             });
