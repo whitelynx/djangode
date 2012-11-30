@@ -318,7 +318,7 @@ var nodes = exports.nodes = {
                 list = context.get(listname),
                 out = '';
 
-            if (typeof list in values('null', 'undefined'))
+            if (typeof list in values('null', 'undefined')) {
                 list = [];
             }
             else if (list instanceof Object) {
