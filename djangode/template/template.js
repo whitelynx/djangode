@@ -344,7 +344,7 @@ extend(Context.prototype, {
             }
         }
 
-        return '';
+        return undefined;
     },
     set: function (name, value) {
         this.scope[0][name] = value;
