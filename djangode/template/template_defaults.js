@@ -449,25 +449,25 @@ var nodes = exports.nodes = {
     },
 
     BlockNode: function (node_list, name) {
-
-        /* upon execution each block stores it's nodelist in the context
-         * indexed by the blocks name. As templates are executed from child to
-         * parent, similar named blocks add their nodelist to an array of
-         * nodelists (still indexed by the blocks name). When the root template
-         * is reached, the blocks nodelists are executed one after each other
+        /**
+         * Upon execution, each block stores its nodelist in the context,
+         * indexed by the block's name. As templates are executed from child to
+         * parent, similarly-named blocks add their nodelist to an array of
+         * nodelists. (still indexed by the blocks name) When the root template
+         * is reached, the block's nodelists are executed one after each other,
          * and the super variable is updated down through the hierachy.
         */
         return function (context, callback) {
 
-            // init block list if it isn't already
+            // Init block list if it isn't already.
             if (!context.blocks[name]) {
                 context.blocks[name] = [];
             }
 
-            // put this block in front of list
+            // Put this block in front of list.
             context.blocks[name].unshift( node_list );
 
-            // if this is a root template descend through templates and evaluate blocks for overrides
+            // If this is the root template, descend through extended templates and evaluate blocks for overrides.
             if (!context.extends) {
 
                 context.push();
@@ -484,7 +484,7 @@ var nodes = exports.nodes = {
                 });
 
             } else {
-                // else return empty string
+                // Else, return empty string.
                 callback(false, '');
             }
         };
