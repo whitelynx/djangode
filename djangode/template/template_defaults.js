@@ -300,7 +300,12 @@ var nodes = exports.nodes = {
 
     VariableNode: function (filterexpression) {
         return function (context, callback) {
-            callback(false, filterexpression.resolve(context));
+            var value = filterexpression.resolve(context);
+            if(typeof value in values('null', 'undefined'))
+            {
+                value = '';
+            }
+            callback(false, value);
         };
     },
 
