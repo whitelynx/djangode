@@ -7,9 +7,9 @@ var util = require('util');
 
 function BaseError(name, level /*, message, ...*/)
 {
-	this.name = name;
-	this.level = level;
-	this.message = util.format.apply(this, Array.prototype.slice(arguments, [2]))
+    this.name = name;
+    this.level = level;
+    this.message = util.format.apply(this, Array.prototype.slice(arguments, [2]))
     this.htmlMessage = util.format('<h2>%s</h2><p>%s</p>', name, this.message);
 
     Error.call(this);
@@ -34,7 +34,7 @@ function FileNotFound(filename, directories)
             filename,
             directories ? ' - ' + directories.join('\n - ') : ' (no directories given)'
             );
-	this.htmlMessage = util.format(
+    this.htmlMessage = util.format(
             '<h2>File Not Found</h2><p>File "%s" not found in the given directories:</p><ul><li>%s</li></ul>',
             filename,
             directories.join('</li><li>')
@@ -55,7 +55,7 @@ function TemplateNotFound(template, templateSearchPath)
             filename,
             directories ? ' - ' + templateSearchPath.join('\n - ') : ' (no directories given)'
             );
-	this.htmlMessage = util.format(
+    this.htmlMessage = util.format(
             '<h2>Template Not Found</h2><p>Template "%s" not found. Please check the template name, or your settings.</p><p>Template search path:</p><ul><li>%s</li></ul>',
             filename,
             templateSearchPath.join('</li><li>')
@@ -66,9 +66,29 @@ util.inherits(TemplateNotFound, BaseError);
 
 
 // --------------------------------------------------------------------------------------------------------------------
+// Not Iterable
+// --------------------------------------------------------------------------------------------------------------------
+
+function NotIterable(value)
+{
+    BaseError.call(this, "Value Not Iterable", "Error",
+            'Value %j is not iterable!',
+            value
+            );
+    this.htmlMessage = util.format(
+            '<h2>File Not Found</h2><p>Value %j is not iterable!</p>',
+            value
+            );
+}
+
+util.inherits(NotIterable, BaseError);
+
+
+// --------------------------------------------------------------------------------------------------------------------
 
 module.exports = {
     'BaseError': BaseError,
     'FileNotFound': FileNotFound,
     'TemplateNotFound': TemplateNotFound,
+    'NotIterable': NotIterable,
 };

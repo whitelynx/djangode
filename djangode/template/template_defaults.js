@@ -9,6 +9,7 @@ var iter = require('../utils/iter');
 var extend = require('../utils/base').extend;
 var paths = require('../utils/paths');
 var values = require('../utils/values').values;
+var errors = require('../utils/errors');
 
 extend(GLOBAL, require('../utils/tags'));
 
@@ -317,7 +318,7 @@ var nodes = exports.nodes = {
                 list = context.get(listname),
                 out = '';
 
-            if (! list instanceof Array) { throw 'list not iterable' }
+            if (! list instanceof Array) { throw errors.NotIterable('value not iterable') }
             if (isReversed) { list = list.slice(0).reverse(); }
 
             if (list.length === 0) {
