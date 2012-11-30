@@ -825,13 +825,10 @@ var tags = exports.tags = {
 
         var loader = require('./loader');
 
-        console.log(loader.get_path());
         var fullPath = paths.find_file_sync(name, loader.get_path());
-        console.log(fullPath);
         if(!fullPath)
         {
             fullPath = paths.find_file_sync(name + '.js', loader.get_path());
-            console.log(fullPath);
         }
 
         var package = require(fullPath);
