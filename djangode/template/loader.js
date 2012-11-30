@@ -274,7 +274,7 @@ function load_template_from(template, fullPath, callback)
     }
     else
     {
-        callback(new Error(util.format("Invalid template path: %s", util.inspect(fullPath))));
+        callback(new Error(util.format("Invalid template path: %s", util.inspect(template.name))));
     }
 }
 
