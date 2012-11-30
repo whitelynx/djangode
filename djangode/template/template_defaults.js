@@ -317,13 +317,19 @@ var nodes = exports.nodes = {
                 list = context.get(listname),
                 out = '';
 
-            if (list === null || typeof list == 'undefined') {
+            if (list instanceof Array) {
+                // Do nothing; 'list' is already an array.
+            }
+            else if (list === null || typeof list == 'undefined') {
                 list = [];
             }
             else if (list instanceof Object) {
                 list = Object.keys(list);
             }
-            if (! list instanceof Array) { throw errors.NotIterable('value not iterable') }
+            else {
+                throw errors.NotIterable('value not iterable');
+            }
+
             if (isReversed) { list = list.slice(0).reverse(); }
 
             if (list.length === 0) {
