@@ -303,7 +303,7 @@ var nodes = exports.nodes = {
     VariableNode: function (filterexpression) {
         return function (context, callback) {
             var value = filterexpression.resolve(context);
-            if (value === null || typeof value == 'undefined') {
+            if (typeof value == 'undefined' || value === null) {
                 value = '';
             }
             callback(false, value);
@@ -320,7 +320,7 @@ var nodes = exports.nodes = {
             if (list instanceof Array) {
                 // Do nothing; 'list' is already an array.
             }
-            else if (list === null || typeof list == 'undefined') {
+            else if (typeof list == 'undefined' || list === null) {
                 list = [];
             }
             else if (list instanceof Object) {
