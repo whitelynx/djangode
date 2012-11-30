@@ -31,10 +31,26 @@ function make_parse_and_execute_test(expected, tpl, name) {
 }
 
 testcase('fornode')
-    setup( function () { return { obj: { items: [ 1,2,3,4 ], noitems: [] } }; });
+    setup( function () {
+        return {
+            obj: {
+                items: [1, 2, 3, 4],
+                noitems: [],
+                obj: { a: 1, b: 2, c: { d: 23, e: { f: 'laks' } } },
+                null_variable: null
+                // unset_variable -> undefined
+            }
+        };
+    });
+
     make_parse_and_execute_test(' 1  2  3  4 ', '{% for item in items %} {{ item }} {% endfor %}');
-    make_parse_and_execute_test('hest',
-        '{% for item in notitems %} {{ item }} {% empty %}hest{% endfor %}');
+    make_parse_and_execute_test('no items',
+        '{% for item in noitems %} {{ item }} {% empty %}no items{% endfor %}');
+    make_parse_and_execute_test(' a  b  c ', '{% for key in obj %} {{ key }} {% endfor %}');
+    make_parse_and_execute_test('no items',
+        '{% for item in null_variable %} {{ item }} {% empty %}no items{% endfor %}');
+    make_parse_and_execute_test('no items',
+        '{% for item in unset_variable %} {{ item }} {% empty %}no items{% endfor %}');
 
 testcase('variable')
     setup( function () {
@@ -46,7 +62,9 @@ testcase('variable')
                 list: [1,2,'giraf',4],
                 func: function () { return 'tobis'; },
                 obj: { a: 1, b: 2, c: { d: 23, e: { f: 'laks' } } },
-                qstr: '"hest"'
+                qstr: '"hest"',
+                null_variable: null
+                // unset_variable -> undefined
             }
         };
     });
@@ -65,6 +83,8 @@ testcase('variable')
     make_parse_and_execute_test('HEST', '{{ "hest"|upper }}');
     make_parse_and_execute_test('16', '{{ 10|add:"6" }}');
     make_parse_and_execute_test('0', '{{ 6|add:6|add:"-12" }}');
+    make_parse_and_execute_test('', '{{ unset_variable }}');
+    make_parse_and_execute_test('', '{{ null_variable }}');
 
 
 testcase('ifnode')
