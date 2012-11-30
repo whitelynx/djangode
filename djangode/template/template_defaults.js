@@ -8,6 +8,7 @@ var html = require('../utils/html');
 var iter = require('../utils/iter');
 var extend = require('../utils/base').extend;
 var paths = require('../utils/paths');
+var values = require('../utils/values').values;
 
 extend(GLOBAL, require('../utils/tags'));
 
