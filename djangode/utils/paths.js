@@ -81,7 +81,7 @@ function find_file_sync(filename, directories)
         }
     }
 
-    throw new errors.FileNotFound(filename, directories);
+    return undefined;
 }
 
 
