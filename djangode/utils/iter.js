@@ -15,8 +15,8 @@ exports.reduce = function reduce(array, iter_callback, initial, result_callback)
         if (index < array.length) {
             process.nextTick( function () {
                 try {
+                    iter_callback( value, array[index], index, array, inner );
                     index = index + 1;
-                    iter_callback( value, array[index - 1], index, array, inner );
                 } catch (e) {
                     result_callback(e);
                 }
