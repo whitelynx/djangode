@@ -94,7 +94,7 @@ function add_path(path)
 
 function get_path()
 {
-    return template_path.slice(0);
+    return template_path.slice();
 }
 
 

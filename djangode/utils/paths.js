@@ -19,17 +19,17 @@ function find_file(filename, directories, callback)
     {
         throw 'paths.find_file() must be called with a callback';
     }
-    var templateDirs = directories.slice(0);  // Copy the template_path array.
+    var dirsToSearch = directories.slice();  // Copy the template_path array.
 
     function tryNextPathEntry()
     {
-        if(templateDirs.length == 0)
+        if(dirsToSearch.length == 0)
         {
             callback(errors.FileNotFound(filename, directories));
             return;
         }
 
-        var fullPath = path.join(templateDirs.shift(), filename);
+        var fullPath = path.join(dirsToSearch.shift(), filename);
         fs.stat(fullPath,
                 function (error, stats)
                 {
