@@ -346,6 +346,20 @@ extend(Context.prototype, {
 
         return undefined;
     },
+    keys: function () {
+        var keys = [];
+        var visitedKeys = {}; // Use an object to track keys we already have
+        var level;
+        for (level = 0; level < this.scope.length; level++) {
+            for (var key in this.scope[level]) {
+                if (this.scope[level].hasOwnProperty(key) && !(key in visitedKeys)) {
+                    keys.push(key);
+                    visitedKeys[key] = null;
+                }
+            }
+        }
+        return keys;
+    },
     set: function (name, value) {
         this.scope[0][name] = value;
     },
