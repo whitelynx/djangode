@@ -906,10 +906,10 @@ var tags = exports.tags = {
 
         var loader = require('./loader');
 
-        var fullPath = paths.find_file_sync(name, loader.get_path());
+        var fullPath = paths.find_file_sync(name, loader.get_tags_path());
         if(!fullPath)
         {
-            fullPath = paths.find_file_sync(name + '.js', loader.get_path());
+            fullPath = paths.find_file_sync(name + '.js', loader.get_tags_path());
         }
 
         var package = require(fullPath);
@@ -939,7 +939,7 @@ var tags = exports.tags = {
         }
 
         // TODO: handle qouted strings with commas in them correctly
-        var replacements = parts.join('').split(/\s*,\s*/)
+        var replacements = parts.join('').split(/\s*,\s*/);
 
         return nodes.UrlNode(url_name, replacements, item_name);
     }

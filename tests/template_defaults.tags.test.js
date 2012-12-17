@@ -269,7 +269,7 @@ testcase('load')
     setup(function () {
         var template_loader = require('../djangode/template/loader');
         template_loader.flush_cache();
-        template_loader.set_path([__dirname]);
+        template_loader.set_tags_path([__dirname]);
 
         return { obj: {} };
     })

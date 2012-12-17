@@ -13,6 +13,7 @@ var errors = require('../utils/errors');
 var cache = {};
 var cache_enabled = true;
 var template_path = ['/tmp'];
+var templatetags_path = ['/tmp'];
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -95,6 +96,26 @@ function add_path(path)
 function get_path()
 {
     return template_path.slice();
+}
+
+function set_templatetags_path(path)
+{
+    if (typeof path == 'string')
+    {
+        path = [path];
+    }
+
+    templatetags_path = path;
+}
+
+function add_templatetags_path(path)
+{
+    templatetags_path.push(path);
+}
+
+function get_templatetags_path()
+{
+    return templatetags_path.slice();
 }
 
 
@@ -294,4 +315,7 @@ module.exports = {
     'set_path': set_path,
     'add_path': add_path,
     'get_path': get_path,
+    'set_tags_path': set_templatetags_path,
+    'add_tags_path': add_templatetags_path,
+    'get_tags_path': get_templatetags_path
 };
