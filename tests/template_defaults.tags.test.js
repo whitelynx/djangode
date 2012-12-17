@@ -262,6 +262,8 @@ testcase('include')
 
     make_parse_and_execute_test('her er en hestgiraf.', '{% include "include_test.html" %}');
     make_parse_and_execute_test('her er en hestgiraf.', '{% include name %}');
+    make_parse_and_execute_test('her er en hestpiggy.', '{% include name with item="piggy" %}');
+    make_parse_and_execute_test('her er en hest.', '{% include name with foo="bar" only %}');
 
 testcase('load')
     setup(function () {
