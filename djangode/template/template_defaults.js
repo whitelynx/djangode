@@ -555,10 +555,50 @@ var nodes = exports.nodes = {
         };
     },
 
-    IncludeNode: function (name) {
+    IncludeNode: function (templateName, contextVars, only) {
         return function (context, callback) {
+            onRenderFinished = context;
+
+            var template = context.get(templateName);
+
+            if (contextVars)
+            {
+                var newContext = {};
+
+                if(only)
+                {
+                    // Mask each existing key by overwriting it with null.
+                    console.log("ONLY!", context);
+                    context.keys().forEach(function eachKey(key) {
+                        newContext[key] = null;
+                        console.log(key, '=', null);
+                    });
+                }
+
+                // Copy context variable assignments into newContext.
+                contextVars.forEach(function eachArg(arg) {
+                    var equal_idx = arg.indexOf('=');
+                    if (equal_idx < 1) {
+                        throw 'unexpected syntax in "include" tag. Expected "=" in variable assignment'
+                    }
+
+                    var key = arg.substring(0, equal_idx);
+                    var value = arg.substring(equal_idx + 1);
+
+                    newContext[key] = context.get(value);
+                });
+
+                context.push(newContext);
+
+                onRenderFinished = function onRenderFinished(error, output) {
+                    context.pop();
+
+                    callback(error, output);
+                }
+            }
+
             var loader = require('./loader');
-            loader.load_and_render(context.get(name), context, callback);
+            loader.load_and_render(template, context, callback);
         }
     },
 
@@ -827,7 +867,36 @@ var tags = exports.tags = {
     },
 
     'now': simple_tag(nodes.NowNode, { argcount: 1 }),
-    'include': simple_tag(nodes.IncludeNode, { argcount: 1 }),
+
+    'include': function (parser, token) {
+        var parts = token.split_contents();
+
+        if (parts.length < 2) {
+            throw 'unexpected syntax in "include" tag. Expected template path after "include"';
+        }
+
+        var template = parts[1];
+        var contextVars = undefined;
+        var only = false;
+
+        if (parts.length > 2) {
+            if (parts[2] != 'with') {
+                throw 'unexpected syntax in "include" tag. Expected "with" after template path';
+            }
+
+            contextVars = parts.slice(3);
+
+            // If 'only' is specified, set the flag and remove that argument.
+            var only_idx = contextVars.indexOf('only');
+            if (only_idx > 0) {
+                only = true;
+                contextVars.splice(only_idx, 1);
+            }
+        }
+
+        return nodes.IncludeNode(template, contextVars, only);
+    },
+
     'load': function (parser, token) {
         var parts = get_args_from_token(token, { argcount: 1 });
         var name = parts[0];
