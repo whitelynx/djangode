@@ -8,8 +8,8 @@ var iter = require('../utils/iter');
 var extend = require('../utils/base').extend;
 
 
-function parse(input) {
-    return new Template(input);
+function parse(input, filename) {
+    return new Template(input, filename);
 };
 
 function normalize(value) {
@@ -45,6 +45,47 @@ function tokenize(input) {
 
     var token_list = [];
 
+    var lastLineCount = 0;
+    var lastLineStartPos = 0;
+    var lastLineCountEndPos = 0;
+
+    function countLines(text) {
+        var count = -1;
+        var position = -1;
+        var lastPosition = -1;
+
+        do {
+            count += 1;
+            lastPosition = position;
+            position = text.indexOf('\n', position + 1);
+        } while (position != -1);
+
+        return {'count': count, 'lastPosition': lastPosition};
+    }
+
+    function lineNum(pos) {
+        if (pos == lastLineCountEndPos) {
+            return lastLineCount;
+        }
+
+        if (pos > lastLineCountEndPos) {
+            lastLineCount = 0;
+            lastLineCountEndPos = 0;
+        }
+
+        var countedLines = countLines(input.toString('utf8', lastLineCountEndPos, pos));
+
+        lastLineCount += countedLines.count;
+        lastLineStartPos = countedLines.lastPosition == -1 ? lastLineStartPos : countedLines.lastPosition;
+        lastLineCountEndPos = pos;
+
+        return lastLineCount;
+    }
+
+    function currentLine() {
+        return lineNum(re.lastIndex);
+    }
+
     function consume(re, input) {
         var m = re.exec(input);
         return m ? m[0] : null;
@@ -52,9 +93,9 @@ function tokenize(input) {
 
     function consume_until() {
         var next, s = '';
-        var slice = Array.prototype.slice;
+        var args = Array.prototype.slice.apply(arguments);
         while (next = consume(re, input)) {
-            if (slice.apply(arguments).indexOf(next) > -1) {
+            if (args.indexOf(next) > -1) {
                 return [s, next];
             }
             s += next;
@@ -62,10 +103,22 @@ function tokenize(input) {
         return [s];
     }
 
+    function pushToken(type, contents, lineNum, column) {
+        var newToken = new Token(type, contents);
+        newToken.lineNum = lineNum;
+        newToken.column = column;
+        token_list.push(newToken);
+    }
+
     function literal() {
+        var lineNum = currentLine();
+        var column = re.lastIndex - lastLineStartPos;
+
         var res = consume_until("{{", "{%");
 
-        if (res[0]) { token_list.push( new Token('text', res[0]) ); }
+        if (res[0]) {
+            pushToken('text', res[0], lineNum, column);
+        }
 
         if (res[1] === "{{") { return variable_tag; }
         if (res[1] === "{%") { return template_tag; }
@@ -73,18 +126,26 @@ function tokenize(input) {
     }
 
     function variable_tag() {
+        var lineNum = currentLine();
+        var column = re.lastIndex - lastLineStartPos;
+
         var res = consume_until("}}");
 
-        if (res[0]) { token_list.push( new Token('variable', res[0].trim()) ); }
+        if (res[0]) {
+            pushToken('variable', res[0].trim(), lineNum, column);
+        }
         if (res[1]) { return literal; }
         return undefined;
     }
 
     function template_tag() {
+        var lineNum = currentLine();
+        var column = re.lastIndex - lastLineStartPos;
+
         var res = consume_until("%}"),
             parts = res[0].trim().split(/\s/, 1);
 
-        token_list.push( new Token(parts[0], res[0].trim()) );
+        pushToken(parts[0], res[0].trim(), lineNum, column);
 
         if (res[1]) { return literal; }
         return undefined;
@@ -214,10 +275,11 @@ extend(FilterExpression.prototype, {
 
 /*********** PARSER **********************************/
 
-function Parser(input) {
+function Parser(input, filename) {
     this.token_list = tokenize(input);
     this.indent = 0;
     this.blocks = {};
+    this.filename = filename;
 
     var defaults = require('./template_defaults');
     this.tags = defaults.tags;
@@ -374,8 +436,8 @@ extend(Context.prototype, {
 
 /*********** Template **********************************/
 
-function Template(input) {
-    var parser = new Parser(input);
+function Template(input, filename) {
+    var parser = new Parser(input, filename);
     this.node_list = parser.parse();
 }
 

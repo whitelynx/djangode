@@ -288,7 +288,7 @@ function load_template_from(template, fullPath, callback)
                     }
 
                     template.fullPath = fullPath;
-                    template.loaded_template = template_system.parse(s);
+                    template.loaded_template = template_system.parse(s, fullPath);
 
                     callback(null, template);
                 });

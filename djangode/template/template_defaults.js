@@ -576,17 +576,11 @@ var nodes = exports.nodes = {
                 }
 
                 // Copy context variable assignments into newContext.
-                contextVars.forEach(function eachArg(arg) {
-                    var equal_idx = arg.indexOf('=');
-                    if (equal_idx < 1) {
-                        throw 'unexpected syntax in "include" tag. Expected "=" in variable assignment'
-                    }
-
-                    var key = arg.substring(0, equal_idx);
-                    var value = arg.substring(equal_idx + 1);
+                for(var key in contextVars) {
+                    var value = contextVars[key];
 
                     newContext[key] = context.get(value);
-                });
+                }
 
                 context.push(newContext);
 
@@ -731,15 +725,24 @@ var tags = exports.tags = {
             if (next_should_be_item) {
                 if (p === 'not') {
                     p = parts.shift();
-                    if (!p) { throw 'unexpected syntax in "if" tag. Expected item name after not'; }
+                    if (!p) {
+                        throw new errors.TemplateError(parser.filename, token,
+                                'unexpected syntax in "if" tag. Expected item name after "not"');
+                    }
                     not_item_names.push( p );
                 } else {
                     item_names.push( p );
                 }
                 next_should_be_item = false;
             } else {
-                if (p !== 'and' && p !== 'or') { throw 'unexpected syntax in "if" tag. Expected "and" or "or"'; }
-                if (operator && p !== operator) { throw 'unexpected syntax in "if" tag. Cannot mix "and" and "or"'; }
+                if (p !== 'and' && p !== 'or') {
+                    throw new errors.TemplateError(parser.filename, token,
+                            'unexpected syntax in "if" tag. Expected "and" or "or"');
+                    }
+                if (operator && p !== operator) {
+                    throw new errors.TemplateError(parser.filename, token,
+                            'unexpected syntax in "if" tag. Cannot mix "and" and "or"');
+                }
                 operator = p;
                 next_should_be_item = true;
             }
@@ -807,7 +810,8 @@ var tags = exports.tags = {
 
         if (items.length === 1) {
             if (!parser.cycles || !parser.cycles[items[0]]) {
-                throw 'no cycle named ' + items[0] + '!';
+                throw new errors.TemplateError(parser.filename, token,
+                        'no cycle named "%s"!', items[0]);
             } else {
                 return parser.cycles[items[0]];
             }
@@ -815,7 +819,8 @@ var tags = exports.tags = {
 
         if (as_idx > 0) {
             if (as_idx === items.length - 1) {
-                throw 'unexpected syntax in "cycle" tag. Expected name after as';
+                throw new errors.TemplateError(parser.filename, token,
+                        'unexpected syntax in "cycle" tag. Expected name after "as"');
             }
 
             name = items[items.length - 1];
@@ -831,7 +836,10 @@ var tags = exports.tags = {
 
     'filter': function (parser, token) {
         var parts = token.split_contents();
-        if (parts.length > 2) { throw 'unexpected syntax in "filter" tag'; }
+        if (parts.length > 2) {
+            throw new errors.TemplateError(parser.filename, token,
+                    'unexpected syntax in "filter" tag');
+        }
 
         var expr = parser.make_filterexpression('|' + parts[1]);
 
@@ -872,26 +880,41 @@ var tags = exports.tags = {
         var parts = token.split_contents();
 
         if (parts.length < 2) {
-            throw 'unexpected syntax in "include" tag. Expected template path after "include"';
+            throw new errors.TemplateError(parser.filename, token,
+                    'unexpected syntax in "include" tag. Expected template path after "include"');
         }
 
         var template = parts[1];
-        var contextVars = undefined;
+        var contextVars = {};
         var only = false;
 
         if (parts.length > 2) {
             if (parts[2] != 'with') {
-                throw 'unexpected syntax in "include" tag. Expected "with" after template path';
+                throw new errors.TemplateError(parser.filename, token,
+                        'unexpected syntax in "include" tag. Expected "with" after template path');
             }
 
-            contextVars = parts.slice(3);
+            var remaining = parts.slice(3);
 
             // If 'only' is specified, set the flag and remove that argument.
             var only_idx = contextVars.indexOf('only');
             if (only_idx > 0) {
                 only = true;
-                contextVars.splice(only_idx, 1);
+                remaining.splice(only_idx, 1);
             }
+
+            remaining.forEach(function eachArg(arg) {
+                var equal_idx = arg.indexOf('=');
+                if (equal_idx < 1) {
+                    throw new errors.TemplateError(parser.filename, token,
+                            'unexpected syntax in "include" tag. Expected "=" in variable assignment');
+                }
+
+                var key = arg.substring(0, equal_idx);
+                var value = arg.substring(equal_idx + 1);
+
+                contextVars[key] = value;
+            });
         }
 
         return nodes.IncludeNode(template, contextVars, only);
