@@ -97,6 +97,13 @@ testcase('ifnode')
     make_parse_and_execute_test('hest', '{% if not b and a %}hest{% endif %}');
     make_parse_and_execute_test('hest', '{% if a or b %}hest{% endif %}');
     make_parse_and_execute_test('hest', '{% if b or a %}hest{% endif %}');
+    make_parse_and_execute_test('hestbar', '{% if a %}hest{% endif %}bar');
+    make_parse_and_execute_test('bar', '{% if b %}hest{% endif %}bar');
+    make_parse_and_execute_test('hestfalse', '{% if a %}hest{% endif %}{{ b }}');
+    make_parse_and_execute_test('true', '{% if b %}hest{% endif %}{{ a }}');
+    make_parse_and_execute_test('true', '{% if b %}hest{% endif %}{% if a %}{{ a }}{% endif %}');
+    make_parse_and_execute_test('lakstrue', '{% if b %}hest{% else %}laks{% endif %}{% if a %}{{ a }}{% endif %}');
+    make_parse_and_execute_test('hest', '{% if a %}hest{% else %}laks{% endif %}{% if b %}{{ b }}{% endif %}');
 
 testcase('textnode')
     make_parse_and_execute_test('heste er gode laks', 'heste er gode laks');
