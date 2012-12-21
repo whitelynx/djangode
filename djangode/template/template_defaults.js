@@ -897,7 +897,7 @@ var tags = exports.tags = {
             var remaining = parts.slice(3);
 
             // If 'only' is specified, set the flag and remove that argument.
-            var only_idx = contextVars.indexOf('only');
+            var only_idx = remaining.indexOf('only');
             if (only_idx > 0) {
                 only = true;
                 remaining.splice(only_idx, 1);
