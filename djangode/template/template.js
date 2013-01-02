@@ -41,7 +41,7 @@ extend(Token.prototype, {
 /***************** TOKENIZER ******************************/
 
 function tokenize(input) {
-    var re = /(?:{{|}}|{%|%})|[{}%|]|[^{}%|]+/g;
+    var re = /(?:{{|}}|{#|#}|{%|%})|[{}%|]|[^{}%|]+/g;
 
     var token_list = [];
 
@@ -114,14 +114,25 @@ function tokenize(input) {
         var lineNum = currentLine();
         var column = re.lastIndex - lastLineStartPos;
 
-        var res = consume_until("{{", "{%");
+        var res = consume_until("{{", "{%", "{#");
 
         if (res[0]) {
             pushToken('text', res[0], lineNum, column);
         }
 
+        if (res[1] === "{#") { return comment_tag; }
         if (res[1] === "{{") { return variable_tag; }
         if (res[1] === "{%") { return template_tag; }
+        return undefined;
+    }
+
+    function comment_tag() {
+        var lineNum = currentLine();
+        var column = re.lastIndex - lastLineStartPos;
+
+        var res = consume_until("#}");
+
+        if (res[1]) { return literal; }
         return undefined;
     }
 
