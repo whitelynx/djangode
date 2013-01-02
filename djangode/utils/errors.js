@@ -105,6 +105,24 @@ util.inherits(TemplateError, BaseError);
 
 
 // --------------------------------------------------------------------------------------------------------------------
+// Template Parse Error
+// --------------------------------------------------------------------------------------------------------------------
+
+function TemplateParseError(filename, message)
+{
+    filename = filename || '<string>';
+
+    BaseError.call(this, "Template Parse Error", "Critical", 'Template Parse Error in %s: %s', filename, message);
+    this.htmlMessage = util.format(
+            '<h2>Template Parse Error</h2><p><em>in %s</em></p><p>%s</p></ul>',
+            filename, message
+            );
+}
+
+util.inherits(TemplateParseError, TemplateError);
+
+
+// --------------------------------------------------------------------------------------------------------------------
 
 module.exports = {
     'BaseError': BaseError,
@@ -112,4 +130,5 @@ module.exports = {
     'TemplateNotFound': TemplateNotFound,
     'NotIterable': NotIterable,
     'TemplateError': TemplateError,
+    'TemplateParseError': TemplateParseError,
 };
