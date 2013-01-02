@@ -350,5 +350,10 @@ testcase('url')
         "{% url 'news-views-special_case_2003' as the_url %}{{ the_url }}");
     make_parse_and_execute_test("/articles/1981/12/",
         "{% url 'news-views-month_archive' 1981, 12 as the_url %}{{ the_url }}");
-run();
 
+testcase('set')
+    setup(function () { return {obj:{some_variable: "variable value!" } }; });
+    make_parse_and_execute_test('var1: stuff', '{% set var1 %}stuff{% endset %}var1: {{ var1 }}');
+    make_parse_and_execute_test('var1: some variable value!', '{% set var1 %}some {{ some_variable }}{% endset %}var1: {{ var1 }}');
+
+run();

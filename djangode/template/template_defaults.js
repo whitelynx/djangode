@@ -675,6 +675,15 @@ var nodes = exports.nodes = {
                 callback(false, url);
             }
         }
+    },
+
+    SetNode: function (node_list, name) {
+        return function (context, callback) {
+            node_list.evaluate( context, function (error, result) {
+                context.set(name, result);
+                callback(error, '');
+            });
+        }
     }
 };
 
@@ -965,8 +974,20 @@ var tags = exports.tags = {
         var replacements = parts.join('').split(/\s*,\s*/);
 
         return nodes.UrlNode(url_name, replacements, item_name);
+    },
+
+    ///////////////////////////////////////////
+    // Extension tags (NOT defined in Django)
+
+    'set': function (parser, token) {
+        var parts = get_args_from_token(token, { argcount: 1 });
+        var varname = parts[0];
+        if ((varname[0] === '"' || varname[0] === "'") && varname[0] === varname[varname.length - 1]) {
+            varname = varname.substr(1, varname.length - 2);
+        }
+
+        var node_list = parser.parse('end' + token.type);
+        parser.delete_first_token();
+        return nodes.SetNode(node_list, varname);
     }
-
-
 };
-
