@@ -6,6 +6,7 @@ var string_utils = require('../utils/string');
 var html = require('../utils/html');
 var iter = require('../utils/iter');
 var extend = require('../utils/base').extend;
+var errors = require('../utils/errors');
 
 
 function parse(input, filename) {
@@ -297,10 +298,6 @@ function Parser(input, filename) {
     this.nodes = defaults.nodes;
 }
 
-function parser_error(e) {
-    return 'Parsing exception: ' + JSON.stringify(e, 0, 2);
-}
-
 function make_nodelist() {
     var node_list = [];
     node_list.evaluate = function (context, callback) {
@@ -344,7 +341,7 @@ extend(Parser.prototype, {
             if (tag && typeof tag === 'function') {
                 node_list.append( tag(this, token), token.type );
             } else {
-                //throw parser_error('Unknown tag: ' + token[0]);
+                //throw new errors.TemplateParseError(this.filename, 'Unknown tag: ' + token[0]);
                 node_list.append(
                     this.nodes.TextNode('[[ UNKNOWN ' + token.type + ' ]]'),
                     'UNKNOWN'
@@ -352,7 +349,7 @@ extend(Parser.prototype, {
             }
         }
         if (stoppers.length) {
-            throw new parser_error('Tag not found: ' + stoppers.join(', '));
+            throw new errors.TemplateParseError(this.filename, 'Expected tag not found: ' + stoppers.join(', '));
         }
 
         //util.debug('' + this.indent-- + ':parse done returning end (length: ' + node_list.length + ')');
