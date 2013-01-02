@@ -42,7 +42,7 @@ extend(Token.prototype, {
 /***************** TOKENIZER ******************************/
 
 function tokenize(input) {
-    var re = /(?:{{|}}|{#|#}|{%|%})|[{}%|]|[^{}%|]+/g;
+    var re = /(?:{#|#}|{{|}}|{%|%})|[{}%#|]|[^{}%#|]+/g;
 
     var token_list = [];
 

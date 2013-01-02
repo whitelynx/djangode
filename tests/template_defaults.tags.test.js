@@ -104,6 +104,7 @@ testcase('ifnode')
     make_parse_and_execute_test('true', '{% if b %}hest{% endif %}{% if a %}{{ a }}{% endif %}');
     make_parse_and_execute_test('lakstrue', '{% if b %}hest{% else %}laks{% endif %}{% if a %}{{ a }}{% endif %}');
     make_parse_and_execute_test('hest', '{% if a %}hest{% else %}laks{% endif %}{% if b %}{{ b }}{% endif %}');
+    make_parse_and_execute_test('some text', '{% if a %}some {#this stuff is commented out#}text{% endif %}');
 
 testcase('textnode')
     make_parse_and_execute_test('heste er gode laks', 'heste er gode laks');

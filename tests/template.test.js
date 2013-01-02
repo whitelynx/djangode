@@ -25,7 +25,7 @@ testcase('Test tokenizer');
         assertEquals( ['date:"F j, Y"'], tokenize('date:"F j, Y"')[0].split_contents());
         assertEquals( ['date:', '"F j, Y"'], tokenize('date: "F j, Y"')[0].split_contents());
     });
-    test('skip comment tags', function () {
+    test('skip inline comments', function () {
         var tokens = tokenize('{#tag#}');
         assertEquals( [], tokens );
     });
