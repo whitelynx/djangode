@@ -211,6 +211,7 @@ testcase('with')
             end_async_test(complete);
         })
     });
+    make_parse_and_execute_test('var1: stuff', '{% with "stuff" as var1 %}var1: {{ var1 }}{% endwith %}');
 
 testcase('ifchanged')
     setup(function () { return {obj: { list:['hest','giraf','giraf','hestgiraf'] }}; });
