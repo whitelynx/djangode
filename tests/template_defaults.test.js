@@ -455,5 +455,17 @@ testcase('yesno')
         assertEquals('maybe', filters.yesno(undefined, "yeah,no,maybe"));
         assertEquals('no', filters.yesno(undefined, "yeah,no"));
     });
+testcase('range')
+    test('should return correct value', function () {
+        assertEquals([0, 1, 2], filters.range(3));
+        assertEquals([], filters.range(0));
+        assertEquals([], filters.range(null));
+    });
+    test("should not throw and not return []", function () {
+        shouldThrow(filters.range, "foo");
+        shouldThrow(filters.range, {});
+        shouldThrow(filters.range, []);
+        shouldThrow(filters.range, undefined);
+    });
 run();
 

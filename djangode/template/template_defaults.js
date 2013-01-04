@@ -289,8 +289,25 @@ var filters = exports.filters = {
         var responses = (arg + "").split(/,/g);
         if (responses[2] && (value === undefined || value === null)) { return responses[2]; }
         return (value ? responses[0] : responses[1]) || '';
-    }
+    },
 
+    //////////////////////////////////////////////
+    // Extension filters (NOT defined in Django)
+
+    range: function (value, arg) {
+        if(value !== null && !Number.isFinite(value))
+        {
+            throw new errors.NotNumeric(value);
+        }
+        value = Number(value);
+
+        rangeList = [];
+        for (var idx = 0; idx < value; idx++) {
+            rangeList.push(idx);
+        }
+
+        return rangeList;
+    }
 };
 
 
