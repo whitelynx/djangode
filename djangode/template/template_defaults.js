@@ -568,10 +568,8 @@ var nodes = exports.nodes = {
                 if(only)
                 {
                     // Mask each existing key by overwriting it with null.
-                    console.log("ONLY!", context);
                     context.keys().forEach(function eachKey(key) {
                         newContext[key] = null;
-                        console.log(key, '=', null);
                     });
                 }
 
