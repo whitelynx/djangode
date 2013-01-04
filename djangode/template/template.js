@@ -188,22 +188,22 @@ function FilterExpression(expression, constant) {
     //util.debug(expression + ' => ' + util.inspect( parsed ) );
 
     if (!parsed) {
-        throw this.error(expression);
+        this.error("Couldn't parse expression: %j", expression);
     }
     if (constant !== undefined) {
         if (parsed.variable !== undefined || parsed.constant !== undefined) {
-            throw this.error(expression + ' - did not expect variable when constant is defined');
+            this.error("Did not expect variable when constant is passed (in expression %j)", expression);
         }
         parsed.constant = constant;
     }
 
     while (parsed) {
         if (parsed.constant !== undefined && parsed.variable !== undefined) {
-            throw this.error(expression + ' - did not expect both variable and constant');
+            this.error("Did not expect both variable and constant (in expression %j)", expression);
         }
         if ((parsed.constant !== undefined || parsed.variable !== undefined) &&
             (this.variable !== undefined || this.constant !== undefined)) {
-            throw this.error(expression + ' - did not expect variable or constant at this point');
+            this.error("Did not expect variable or constant at this point (in expression %j)", expression);
         }
         if (parsed.constant !== undefined) { this.constant = normalize(parsed.constant); }
         if (parsed.variable !== undefined) { this.variable = normalize(parsed.variable); }
@@ -237,11 +237,11 @@ extend(FilterExpression.prototype, {
         return token;
     },
 
-    error: function (message) {
-        throw util.format(
-            "%s\nCan't parse FilterExpression at char %s; ensure that there are no spaces between filters or arguments.\n",
-            message,
-            filter_re.lastIndex
+    error: function () {
+        var args = Array.prototype.slice.call(arguments, 0);
+        args[0] += "\nCan't parse FilterExpression at char %s; ensure that there are no spaces between filters or arguments.";
+        throw util.format.apply(util,
+            Array.prototype.concat.call(args, [filter_re.lastIndex])
             );
     },
 
