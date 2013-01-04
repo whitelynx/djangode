@@ -327,7 +327,7 @@ var nodes = exports.nodes = {
                 list = Object.keys(list);
             }
             else {
-                throw errors.NotIterable('value not iterable');
+                throw new errors.NotIterable('value not iterable');
             }
 
             if (isReversed) { list = list.slice(0).reverse(); }
@@ -355,7 +355,9 @@ var nodes = exports.nodes = {
                 });
                 context.set(itemname, c);
 
-                node_list.evaluate( context, function (error, result) { next(error, p + result); });
+                node_list.evaluate(context, function (error, result) {
+                    next(error, p + result);
+                });
             }
 
             iter.reduce(list, inner, '', function (error, result) {
