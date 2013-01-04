@@ -237,8 +237,12 @@ extend(FilterExpression.prototype, {
         return token;
     },
 
-    error: function (s) {
-        throw s + "\ncan't parse filterexception at char " + filter_re.lastIndex + ". Make sure there is no spaces between filters or arguments\n";
+    error: function (message) {
+        throw util.format(
+            "%s\nCan't parse FilterExpression at char %s; ensure that there are no spaces between filters or arguments.\n",
+            message,
+            filter_re.lastIndex
+            );
     },
 
     resolve: function (context) {
