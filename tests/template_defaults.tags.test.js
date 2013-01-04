@@ -37,6 +37,7 @@ testcase('fornode')
                 items: [1, 2, 3, 4],
                 noitems: [],
                 obj: { a: 1, b: 2, c: { d: 23, e: { f: 'laks' } } },
+                number: 3,
                 null_variable: null
                 // unset_variable -> undefined
             }
@@ -51,6 +52,8 @@ testcase('fornode')
         '{% for item in null_variable %} {{ item }} {% empty %}no items{% endfor %}');
     make_parse_and_execute_test('no items',
         '{% for item in unset_variable %} {{ item }} {% empty %}no items{% endfor %}');
+    make_parse_and_execute_test(' 0  1  2 ',
+        '{% for item in number|range %} {{ item }} {% empty %}no items{% endfor %}');
 
 testcase('variable')
     setup( function () {
@@ -324,7 +327,18 @@ testcase('regroup')
         '<li>Male:<ul><li>George Bush</li><li>Bill Clinton</li></ul></li>' +
         '<li>Female:<ul><li>Margaret Thatcher</li><li>Condoleezza Rice</li></ul></li>' +
         '<li>Unknown:<ul><li>Pat Smith</li></ul></li></ul>',
+
         '{% regroup people by gender as gender_list %}' +
+        '<ul>{% for gender in gender_list %}<li>{{ gender.grouper }}:' +
+        '<ul>{% for item in gender.list %}<li>{{ item.first_name }} {{ item.last_name }}</li>{% endfor %}' +
+        '</ul></li>{% endfor %}</ul>');
+
+    make_parse_and_execute_test('<ul>' +
+        '<li>Female:<ul><li>Margaret Thatcher</li><li>Condoleezza Rice</li></ul></li>' +
+        '<li>Male:<ul><li>George Bush</li><li>Bill Clinton</li></ul></li>' +
+        '<li>Unknown:<ul><li>Pat Smith</li></ul></li></ul>',
+
+        '{% regroup people|dictsort:"gender" by gender as gender_list %}' +
         '<ul>{% for gender in gender_list %}<li>{{ gender.grouper }}:' +
         '<ul>{% for item in gender.list %}<li>{{ item.first_name }} {{ item.last_name }}</li>{% endfor %}' +
         '</ul></li>{% endfor %}</ul>');
@@ -337,20 +351,20 @@ testcase('url')
             'news-views-month_archive': /^articles\/(\d{4})\/(\d{2})\/$/,
             'news-views-article_detail': /^articles\/(\d{4})\/(\d{2})\/(\d+)\/$/
         };
-        return { obj: { year: 1981, month: 12, date: 2, url_name: 'news-views-article_detail' } };
+        return { obj: { year: 1981, month: 12, date: 2 } };
     });
     teardown( function () {
         delete process.djangode_urls;
     });
-    make_parse_and_execute_test("/articles/2003/", "{% url 'news-views-special_case_2003' %}");
-    make_parse_and_execute_test("/articles/1981/", "{% url 'news-views-year_archive' 1981 %}");
-    make_parse_and_execute_test("/articles/1981/12/", "{% url 'news-views-month_archive' 1981 , 12 %}");
-    make_parse_and_execute_test("/articles/1981/12/2/", "{% url url_name year, month, date %}");
+    make_parse_and_execute_test("/articles/2003/", "{% url news-views-special_case_2003 %}");
+    make_parse_and_execute_test("/articles/1981/", "{% url news-views-year_archive 1981 %}");
+    make_parse_and_execute_test("/articles/1981/12/", "{% url news-views-month_archive 1981 , 12 %}");
+    make_parse_and_execute_test("/articles/1981/12/2/", "{% url news-views-article_detail year, month, date %}");
 
     make_parse_and_execute_test("/articles/2003/",
-        "{% url 'news-views-special_case_2003' as the_url %}{{ the_url }}");
+        "{% url news-views-special_case_2003 as the_url %}{{ the_url }}");
     make_parse_and_execute_test("/articles/1981/12/",
-        "{% url 'news-views-month_archive' 1981, 12 as the_url %}{{ the_url }}");
+        "{% url news-views-month_archive 1981, 12 as the_url %}{{ the_url }}");
 
 testcase('set')
     setup(function () { return {obj:{some_variable: "variable value!" } }; });
