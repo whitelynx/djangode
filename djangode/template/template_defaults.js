@@ -35,6 +35,13 @@ NOTE:
     url tag relies on app being set in process.djangode_urls
 */
 
+// Map functions
+function not(x) { return !x; }
+function and(p,c) { return p && c; }
+function or(p,c) { return p || c; }
+function resolve(filterexpr) { return filterexpr.resolve(this); } // MUST call map with 'context' as the 'this' parameter!
+function mkfilterexpr(value) { return this.make_filterexpression(value); } // MUST call map with 'parser' as the 'this' parameter!
+
 var filters = exports.filters = {
     add: function (value, arg) {
         value = value - 0;
@@ -328,10 +335,9 @@ var nodes = exports.nodes = {
     },
 
     ForNode: function (node_list, empty_list, itemname, listname, isReversed) {
-
         return function (context, callback) {
             var forloop = { parentloop: context.get('forloop') },
-                list = context.get(listname),
+                list = listname.resolve(context),
                 out = '';
 
             if (list instanceof Array) {
@@ -388,13 +394,8 @@ var nodes = exports.nodes = {
     IfNode: function (item_names, not_item_names, operator, if_node_list, else_node_list) {
 
         return function (context, callback) {
-
-            function not(x) { return !x; }
-            function and(p,c) { return p && c; }
-            function or(p,c) { return p || c; }
-
-            var items = item_names.map( context.get, context ).concat(
-                not_item_names.map( context.get, context ).map( not )
+            var items = item_names.map(resolve, context).concat(
+                not_item_names.map(resolve, context).map(not)
             );
 
             var isTrue = items.reduce( operator === 'or' ? or : and, true );
@@ -428,7 +429,7 @@ var nodes = exports.nodes = {
 
     IfEqualNode: function (node_list, else_list, first, second) {
         return function (context, callback) {
-            if (context.get(first) == context.get(second)) {
+            if (first.resolve(context) == second.resolve(context)) {
                 node_list.evaluate(context, callback);
             } else if (else_list) {
                 else_list.evaluate(context, callback);
@@ -440,7 +441,7 @@ var nodes = exports.nodes = {
 
     IfNotEqualNode: function (node_list, else_list, first, second) {
         return function (context, callback) {
-            if (context.get(first) != context.get(second)) {
+            if (first.resolve(context) != second.resolve(context)) {
                 node_list.evaluate(context, callback);
             } else if (else_list) {
                 else_list.evaluate(context, callback);
@@ -457,7 +458,7 @@ var nodes = exports.nodes = {
 
         return function (context, callback) {
 
-            var choices = items.map( context.get, context );
+            var choices = items.map(resolve, context);
             var val = choices[cnt];
             cnt = (cnt + 1) % choices.length;
             callback(false, val);
@@ -517,7 +518,7 @@ var nodes = exports.nodes = {
 
     ExtendsNode: function (item) {
         return function (context, callback) {
-            context.extends = context.get(item);
+            context.extends = item.resolve(context);
             callback(false, '');
         };
     },
@@ -540,14 +541,11 @@ var nodes = exports.nodes = {
         }
     },
 
-    FirstOfNode: function (/*...*/) {
-
-        var choices = Array.prototype.slice.apply(arguments);
-
+    FirstOfNode: function (choices) {
         return function (context, callback) {
             var i, val, found;
             for (i = 0; i < choices.length; i++) {
-                val = context.get(choices[i]);
+                val = choices[i].resolve(context);
                 if (val) { found = true; break; }
             }
             callback(false, found ? val : '')
@@ -556,10 +554,10 @@ var nodes = exports.nodes = {
 
     WithNode: function (node_list, variable, name) {
         return function (context, callback) {
-            var item = context.get(variable);
+            var item = variable.resolve(context);
             context.push();
             context.set(name, item);
-            node_list.evaluate( context, function (error, result) {
+            node_list.evaluate(context, function (error, result) {
                 context.pop();
                 callback(error, result);
             });
@@ -579,7 +577,7 @@ var nodes = exports.nodes = {
         return function (context, callback) {
             onRenderFinished = context;
 
-            var template = context.get(templateName);
+            var template = templateName.resolve(context);
 
             if (contextVars)
             {
@@ -597,7 +595,7 @@ var nodes = exports.nodes = {
                 for(var key in contextVars) {
                     var value = contextVars[key];
 
-                    newContext[key] = context.get(value);
+                    newContext[key] = value.resolve(context);
                 }
 
                 context.push(newContext);
@@ -651,9 +649,9 @@ var nodes = exports.nodes = {
 
     WithRatioNode: function (current, max, constant) {
         return function (context, callback) {
-            current_val = context.get(current);
-            max_val = context.get(max);
-            constant_val = context.get(constant);
+            current_val = current.resolve(context);
+            max_val = max.resolve(context);
+            constant_val = constant.resolve(context);
 
             callback(false, Math.round(current_val / max_val * constant_val) + "");
         }
@@ -661,7 +659,7 @@ var nodes = exports.nodes = {
 
     RegroupNode: function (item, key, name) {
         return function (context, callback) {
-            var list = context.get(item);
+            var list = item.resolve(context);
             if (!list instanceof Array) { callback(false, ''); }
 
             var dict = {};
@@ -678,12 +676,11 @@ var nodes = exports.nodes = {
     },
 
     UrlNode: function (url_name, replacements, item_name) {
-
         return function (context, callback) {
-            var match = process.djangode_urls[context.get(url_name)]
+            var match = process.djangode_urls[url_name]
             if (!match) { return callback('no matching urls for ' + url_name); }
 
-            var url = string_utils.regex_to_string(match, replacements.map(function (x) { return context.get(x); }));
+            var url = string_utils.regex_to_string(match, replacements.map(resolve, context));
             if (url[0] !== '/') { url = '/' + url; }
 
             if (item_name) {
@@ -709,7 +706,7 @@ var tags = exports.tags = {
     'text': function (parser, token) { return nodes.TextNode(token.contents); },
 
     'variable': function (parser, token) {
-        return nodes.VariableNode( parser.make_filterexpression(token.contents) );
+        return nodes.VariableNode(parser.make_filterexpression(token.contents));
     },
 
     'comment': function (parser, token) {
@@ -732,7 +729,9 @@ var tags = exports.tags = {
             parser.delete_first_token();
         }
 
-        return nodes.ForNode(node_list, empty_list, itemname, listname, isReversed);
+        return nodes.ForNode(node_list, empty_list, itemname,
+                parser.make_filterexpression(listname),
+                isReversed);
     },
 
     'if': function (parser, token) {
@@ -756,9 +755,9 @@ var tags = exports.tags = {
                         throw new errors.TemplateError(parser.filename, token,
                                 'unexpected syntax in "if" tag. Expected item name after "not"');
                     }
-                    not_item_names.push( p );
+                    not_item_names.push(parser.make_filterexpression(p));
                 } else {
-                    item_names.push( p );
+                    item_names.push(parser.make_filterexpression(p));
                 }
                 next_should_be_item = false;
             } else {
@@ -811,7 +810,9 @@ var tags = exports.tags = {
             parser.delete_first_token();
         }
 
-        return nodes.IfEqualNode(node_list, else_list, parts[0], parts[1]);
+        return nodes.IfEqualNode(node_list, else_list,
+                parser.make_filterexpression(parts[0]),
+                parser.make_filterexpression(parts[1]));
     },
 
     'ifnotequal': function (parser, token) {
@@ -825,7 +826,9 @@ var tags = exports.tags = {
             parser.delete_first_token();
         }
 
-        return nodes.IfNotEqualNode(node_list, else_list, parts[0], parts[1]);
+        return nodes.IfNotEqualNode(node_list, else_list,
+                parser.make_filterexpression(parts[0]),
+                parser.make_filterexpression(parts[1]));
     },
 
     'cycle': function (parser, token) {
@@ -852,12 +855,14 @@ var tags = exports.tags = {
 
             name = items[items.length - 1];
             items = items.slice(0, items.length - 2);
+            items = items.map(mkfilterexpr, parser);
 
             if (!parser.cycles) { parser.cycles = {}; }
             parser.cycles[name] = nodes.CycleNode(items);
             return parser.cycles[name];
         }
 
+        items = items.map(mkfilterexpr, parser);
         return nodes.CycleNode(items);
     },
 
@@ -890,15 +895,21 @@ var tags = exports.tags = {
         return nodes.BlockNode(node_list, parts[0]);
     },
 
-    'extends': simple_tag(nodes.ExtendsNode, { argcount: 1 }),
+    'extends': function (parser, token) {
+        var parts = get_args_from_token(token, { argcount: 1 });
+        return nodes.ExtendsNode(parser.make_filterexpression(parts[0]));
+    },
 
-    'firstof': simple_tag(nodes.FirstOfNode),
+    'firstof': function (parser, token) {
+        var parts = token.split_contents().slice(1);
+        return nodes.FirstOfNode(parts.map(mkfilterexpr, parser));
+    },
 
     'with': function (parser, token) {
         var parts = get_args_from_token(token, { argcount: 3, exclude: 2, mustbe: { 2: 'as' }});
         var node_list = parser.parse('end' + token.type);
         parser.delete_first_token();
-        return nodes.WithNode(node_list, parts[0], parts[1], parts[2]);
+        return nodes.WithNode(node_list, parser.make_filterexpression(parts[0]), parts[1], parts[2]);
     },
 
     'now': simple_tag(nodes.NowNode, { argcount: 1 }),
@@ -911,7 +922,7 @@ var tags = exports.tags = {
                     'unexpected syntax in "include" tag. Expected template path after "include"');
         }
 
-        var template = parts[1];
+        var template = parser.make_filterexpression(parts[1]);
         var contextVars = {};
         var only = false;
 
@@ -940,7 +951,7 @@ var tags = exports.tags = {
                 var key = arg.substring(0, equal_idx);
                 var value = arg.substring(equal_idx + 1);
 
-                contextVars[key] = value;
+                contextVars[key] = parser.make_filterexpression(value);
             });
         }
 
@@ -974,8 +985,16 @@ var tags = exports.tags = {
         parser.delete_first_token();
         return nodes.SpacelessNode(node_list);
     },
-    'widthratio': simple_tag(nodes.WithRatioNode, { argcount: 3 }),
-    'regroup': simple_tag(nodes.RegroupNode, { argcount: 5, mustbe: { 2: 'by', 4: 'as' }, exclude: [2, 4] }),
+    'widthratio': function (parser, token) {
+        var parts = get_args_from_token(token, { argcount: 3 });
+        parts = parts.map(mkfilterexpr, parser);
+        return nodes.WithRatioNode(parts[0], parts[1], parts[2]);
+    },
+    'regroup': function (parser, token) {
+        var parts = get_args_from_token(token, { argcount: 5, mustbe: { 2: 'by', 4: 'as' }, exclude: [2, 4] });
+        return nodes.RegroupNode(parser.make_filterexpression(parts[0]), parts[1], parts[2]);
+    },
+
 
     'url': function (parser, token) {
         var parts = token.split_contents();
@@ -985,11 +1004,16 @@ var tags = exports.tags = {
 
         if (parts[parts.length - 2] === 'as') {
             var item_name = parts.pop();
-            parts.pop();
+            parts.pop(); // Remove the 'as'
         }
 
         // TODO: handle qouted strings with commas in them correctly
-        var replacements = parts.join('').split(/\s*,\s*/);
+        // TODO: Add support for named arguments. ({% url path.to.some_view arg1=v1,arg2=v2 %})
+        var replacements = [];
+        if(parts.length > 0)
+        {
+            replacements = parts.join('').split(/\s*,\s*/).map(mkfilterexpr, parser);
+        }
 
         return nodes.UrlNode(url_name, replacements, item_name);
     },
