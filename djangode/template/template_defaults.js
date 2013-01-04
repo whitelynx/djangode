@@ -327,7 +327,7 @@ var nodes = exports.nodes = {
                 list = Object.keys(list);
             }
             else {
-                throw new errors.NotIterable('value not iterable');
+                throw new errors.NotIterable(list);
             }
 
             if (isReversed) { list = list.slice(0).reverse(); }
