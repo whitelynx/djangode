@@ -65,22 +65,52 @@ util.inherits(TemplateNotFound, BaseError);
 
 
 // --------------------------------------------------------------------------------------------------------------------
+// Invalid Value
+// --------------------------------------------------------------------------------------------------------------------
+
+function InvalidValue(value, message)
+{
+    if(message)
+    {
+        message = util.format.apply(this, Array.prototype.slice.call(arguments, 2))
+    }
+    else
+    {
+        message = util.format('Value %j is invalid!', value);
+    }
+
+    BaseError.call(this, "Invalid Value", "Error", message);
+    this.htmlMessage = util.format(
+            '<h2>Invalid Value</h2><p>%s</p>',
+            message
+            );
+}
+
+util.inherits(InvalidValue, BaseError);
+
+
+// --------------------------------------------------------------------------------------------------------------------
 // Not Iterable
 // --------------------------------------------------------------------------------------------------------------------
 
 function NotIterable(value)
 {
-    BaseError.call(this, "Value Not Iterable", "Error",
-            'Value %j is not iterable!',
-            value
-            );
-    this.htmlMessage = util.format(
-            '<h2>File Not Found</h2><p>Value %j is not iterable!</p>',
-            value
-            );
+    InvalidValue.call(this, value, 'Value %j is not iterable!', value);
 }
 
-util.inherits(NotIterable, BaseError);
+util.inherits(NotIterable, InvalidValue);
+
+
+// --------------------------------------------------------------------------------------------------------------------
+// Not Numeric
+// --------------------------------------------------------------------------------------------------------------------
+
+function NotNumeric(value)
+{
+    InvalidValue.call(this, value, 'Value %j is not numeric!', value);
+}
+
+util.inherits(NotNumeric, InvalidValue);
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -128,7 +158,9 @@ module.exports = {
     'BaseError': BaseError,
     'FileNotFound': FileNotFound,
     'TemplateNotFound': TemplateNotFound,
+    'InvalidValue': InvalidValue,
     'NotIterable': NotIterable,
+    'NotNumeric': NotNumeric,
     'TemplateError': TemplateError,
     'TemplateParseError': TemplateParseError,
 };
