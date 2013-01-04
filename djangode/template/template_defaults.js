@@ -362,13 +362,14 @@ var nodes = exports.nodes = {
             context.set('forloop', forloop);
 
             function inner(p, c, idx, list, next) {
+                // idx is 1-based, not 0-based, apparently due to the semantics of Array.reduce().
                 extend(forloop, {
-                    counter: idx + 1,
-                    counter0: idx,
-                    revcounter: list.length - idx,
-                    revcounter0: list.length - (idx + 1),
-                    first: idx === 0,
-                    last: idx === list.length - 1
+                    counter: idx,
+                    counter0: idx - 1,
+                    revcounter: list.length - (idx - 1),
+                    revcounter0: list.length - idx,
+                    first: idx === 1,
+                    last: idx === list.length
                 });
                 context.set(itemname, c);
 
