@@ -21,17 +21,17 @@ function make_parse_and_execute_test(expected, tpl, name) {
         var parsed = template.parse(tpl);
         parsed.render(testcontext.obj, function (error, actual) {
             if (error) {
-                fail( error, complete );
+                fail(error, complete);
             } else {
                 assertEquals(expected, actual, complete);
             }
-            end_async_test( complete );
+            end_async_test(complete);
         });
     });
 }
 
 testcase('fornode')
-    setup( function () {
+    setup(function () {
         return {
             obj: {
                 items: [1, 2, 3, 4],
@@ -56,13 +56,13 @@ testcase('fornode')
         '{% for item in number|range %} {{ item }} {% empty %}no items{% endfor %}');
 
 testcase('variable')
-    setup( function () {
+    setup(function () {
         return {
             obj: {
                 num: 18,
                 str: 'hest',
                 bool: false,
-                list: [1,2,'giraf',4],
+                list: [1, 2, 'giraf', 4],
                 func: function () { return 'tobis'; },
                 obj: { a: 1, b: 2, c: { d: 23, e: { f: 'laks' } } },
                 qstr: '"hest"',
@@ -116,7 +116,7 @@ testcase('comment')
     make_parse_and_execute_test('', '{% comment %} do not parse {% hest %} any of this{% endcomment %}');
 
 testcase('cycle')
-    setup(function () { return { obj: { c: 'C', items: [1,2,3,4,5,6,7,8,9] }}; });
+    setup(function () { return { obj: { c: 'C', items: [1, 2, 3, 4, 5, 6, 7, 8, 9] }}; });
     make_parse_and_execute_test('a1 b2 C3 a4 b5 C6 a7 b8 C9 ',
         '{% for item in items %}{% cycle \'a\' "b" c %}{{ item }} {% endfor %}');
 
@@ -207,7 +207,7 @@ testcase('with')
 
         t.render(o, function (error, result) {
             if (error) {
-                fail( error, complete );
+                fail(error, complete);
             } else {
                 assertEquals('1:1', result, complete);
                 assertEquals(1, cnt, complete);
@@ -218,7 +218,7 @@ testcase('with')
     make_parse_and_execute_test('var1: stuff', '{% with "stuff" as var1 %}var1: {{ var1 }}{% endwith %}');
 
 testcase('ifchanged')
-    setup(function () { return {obj: { list:['hest','giraf','giraf','hestgiraf'] }}; });
+    setup(function () { return {obj: { list: ['hest', 'giraf', 'giraf', 'hestgiraf'] }}; });
     make_parse_and_execute_test('hestgirafhestgiraf',
         '{% for item in list %}{% ifchanged %}{{ item }}{% endifchanged %}{%endfor%}'
     );
@@ -227,7 +227,7 @@ testcase('ifchanged')
     );
 
 testcase('ifequal')
-    setup(function () { return {obj:{item: 'hest', other: 'hest', fish: 'laks' } }; });
+    setup(function () { return {obj: {item: 'hest', other: 'hest', fish: 'laks' } }; });
 
     make_parse_and_execute_test('giraf', '{% ifequal "hest" "hest" %}giraf{%endifequal %}');
     make_parse_and_execute_test('giraf', '{% ifequal item "hest" %}giraf{%endifequal %}');
@@ -236,7 +236,7 @@ testcase('ifequal')
     make_parse_and_execute_test('tapir', '{% ifequal item fish %}giraf{% else %}tapir{%endifequal %}');
 
 testcase('ifnotequal')
-    setup(function () { return {obj:{item: 'hest', other: 'hest', fish: 'laks' } }; });
+    setup(function () { return {obj: {item: 'hest', other: 'hest', fish: 'laks' } }; });
 
     make_parse_and_execute_test('laks', '{% ifnotequal "hest" "giraf" %}laks{%endifnotequal %}');
     make_parse_and_execute_test('laks', '{% ifnotequal item "giraf" %}laks{%endifnotequal %}');
@@ -305,7 +305,7 @@ testcase('spaceless')
         '{% spaceless %}<p>\n        <a href="foo/">Foo</a>\n    </p>{% endspaceless %}');
 
 testcase('widthratio')
-    setup(function () { return {obj:{this_value: 175, max_value: 200 } }; });
+    setup(function () { return {obj: {this_value: 175, max_value: 200 } }; });
     make_parse_and_execute_test('88', '{% widthratio this_value max_value 100 %}');
 
 testcase('regroup')
@@ -353,7 +353,7 @@ testcase('url')
         };
         return { obj: { year: 1981, month: 12, date: 2 } };
     });
-    teardown( function () {
+    teardown(function () {
         delete process.djangode_urls;
     });
     make_parse_and_execute_test("/articles/2003/", "{% url news-views-special_case_2003 %}");
@@ -367,7 +367,7 @@ testcase('url')
         "{% url news-views-month_archive 1981, 12 as the_url %}{{ the_url }}");
 
 testcase('set')
-    setup(function () { return {obj:{some_variable: "variable value!" } }; });
+    setup(function () { return {obj: {some_variable: "variable value!" } }; });
     make_parse_and_execute_test('var1: stuff', '{% set var1 %}stuff{% endset %}var1: {{ var1 }}');
     make_parse_and_execute_test('var1: some variable value!', '{% set var1 %}some {{ some_variable }}{% endset %}var1: {{ var1 }}');
 

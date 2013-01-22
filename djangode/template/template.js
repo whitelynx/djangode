@@ -34,7 +34,7 @@ function Token(type, contents) {
 }
 
 extend(Token.prototype, {
-    split_contents: function () {
+    split_contents: function() {
         return string_utils.smart_split(this.contents);
     }
 });
@@ -185,7 +185,7 @@ function FilterExpression(expression, constant) {
 
     var parsed = this.consume(expression);
 
-    //util.debug(expression + ' => ' + util.inspect( parsed ) );
+    //util.debug(expression + ' => ' + util.inspect(parsed));
 
     if (!parsed) {
         this.error("Couldn't parse expression: %j", expression);
@@ -209,15 +209,15 @@ function FilterExpression(expression, constant) {
         if (parsed.variable !== undefined) { this.variable = normalize(parsed.variable); }
 
         if (parsed.filter_name) {
-            this.filter_list.push( this.make_filter_token(parsed) );
+            this.filter_list.push(this.make_filter_token(parsed));
         }
 
         parsed = this.consume(expression);
 
-        //util.debug(expression + ' => ' + util.inspect( parsed ) );
+        //util.debug(expression + ' => ' + util.inspect(parsed));
     }
 
-    //util.debug(expression + ' => ' + util.inspect( this ) );
+    //util.debug(expression + ' => ' + util.inspect(this));
 
 };
 
@@ -258,7 +258,7 @@ extend(FilterExpression.prototype, {
             must_escape: context.autoescaping
         };
 
-        var out = this.filter_list.reduce( function (p,c) {
+        var out = this.filter_list.reduce(function (p, c) {
 
             var filter = context.filters[c.name];
 
@@ -282,7 +282,7 @@ extend(FilterExpression.prototype, {
             if (typeof out === 'string') {
                 return html.escape(out);
             } else if (out instanceof Array) {
-                return out.map( function (o) { return typeof o === 'string' ? html.escape(o) : o; } );
+                return out.map(function (o) { return typeof o === 'string' ? html.escape(o) : o; });
             }
         }
         return out;
@@ -311,7 +311,7 @@ function make_nodelist() {
     };
     node_list.only_types = function (/*args*/) {
         var args = Array.prototype.slice.apply(arguments);
-        return this.filter( function (x) { return args.indexOf(x.type) > -1; } );
+        return this.filter(function (x) { return args.indexOf(x.type) > -1; });
     };
     node_list.append = function (node, type) {
         node.type = type;
@@ -343,7 +343,7 @@ extend(Parser.prototype, {
 
             tag = this.tags[token.type];
             if (tag && typeof tag === 'function') {
-                node_list.append( tag(this, token), token.type );
+                node_list.append(tag(this, token), token.type);
             } else {
                 //throw new errors.TemplateParseError(this.filename, 'Unknown tag: ' + token[0]);
                 node_list.append(

@@ -37,8 +37,8 @@ NOTE:
 
 // Map functions
 function not(x) { return !x; }
-function and(p,c) { return p && c; }
-function or(p,c) { return p || c; }
+function and(p, c) { return p && c; }
+function or(p, c) { return p || c; }
 function resolve(filterexpr) { return filterexpr.resolve(this); } // MUST call map with 'context' as the 'this' parameter!
 function mkfilterexpr(value) { return this.make_filterexpression(value); } // MUST call map with 'parser' as the 'this' parameter!
 
@@ -146,12 +146,13 @@ var filters = exports.filters = {
         var len = String(lines.length).length;
 
         var out = lines
-            .map(function (s, idx) {
-                if (!safety.is_safe && safety.must_escape) {
-                    s = html.escape("" + s);
-                }
-                return string_utils.sprintf('%0' + len + 'd. %s', idx + 1, s); })
-            .join('\n');
+                .map(function (s, idx) {
+                    if (!safety.is_safe && safety.must_escape) {
+                        s = html.escape("" + s);
+                    }
+                    return string_utils.sprintf('%0' + len + 'd. %s', idx + 1, s);
+                })
+                .join('\n');
         safety.is_safe = true;
         return out;
     },
@@ -183,11 +184,11 @@ var filters = exports.filters = {
     },
     pprint: function (value, arg) { return JSON.stringify(value); },
     random: function (value, arg) {
-        return (value instanceof Array) ? value[ Math.floor( Math.random() * value.length ) ] : '';
+        return (value instanceof Array) ? value[ Math.floor(Math.random() * value.length) ] : '';
     },
     removetags: function (value, arg, safety) {
         arg = String(arg).replace(/\s+/g, '|');
-        var re = new RegExp( '</?\\s*(' + arg + ')\\b[^>]*/?>', 'ig');
+        var re = new RegExp('</?\\s*(' + arg + ')\\b[^>]*/?>', 'ig');
         safety.is_safe = true;
         return String(value).replace(re, '');
     },
@@ -237,21 +238,21 @@ var filters = exports.filters = {
         return String(value).replace(/<(.|\n)*?>/g, '');
     },
     title: function (value, arg) {
-        return string_utils.titleCaps( String(value) );
+        return string_utils.titleCaps(String(value));
     },
     time: function (value, arg) {
         // TODO: this filter may not be safe
         return (value instanceof Date) ? date_utils.format_time(value, arg) : '';
     },
     timesince: function (value, arg) {
-        // TODO: this filter may not be safe (if people decides to put & or " in formatstrings"
+        // TODO: this filter may not be safe (if people decide to put '&' or '"' in format strings)
         value = new Date(value);
         arg = new Date(arg);
         if (isNaN(value) || isNaN(arg)) { return ''; }
         return date_utils.timesince(value, arg);
     },
     timeuntil: function (value, arg) {
-        // TODO: this filter may not be safe (if people decides to put & or " in formatstrings"
+        // TODO: this filter may not be safe (if people decide to put '&' or '"' in format strings)
         value = new Date(value);
         arg = new Date(arg);
         if (isNaN(value) || isNaN(arg)) { return ''; }
@@ -398,7 +399,7 @@ var nodes = exports.nodes = {
                 not_item_names.map(resolve, context).map(not)
             );
 
-            var isTrue = items.reduce( operator === 'or' ? or : and, true );
+            var isTrue = items.reduce(operator === 'or' ? or : and, true);
 
             if (isTrue) {
                 if_node_list.evaluate(context, function (error, result) { callback(error, result); });
@@ -467,7 +468,7 @@ var nodes = exports.nodes = {
 
     FilterNode: function (expression, node_list) {
         return function (context, callback) {
-            node_list.evaluate( context, function (error, constant) {
+            node_list.evaluate(context, function (error, constant) {
                 expression.constant = constant;
                 callback(error, expression.resolve(context));
             });
@@ -491,7 +492,7 @@ var nodes = exports.nodes = {
             }
 
             // Put this block in front of list.
-            context.blocks[name].unshift( node_list );
+            context.blocks[name].unshift(node_list);
 
             // If this is the root template, descend through extended templates and evaluate blocks for overrides.
             if (!context.extends) {
@@ -499,12 +500,12 @@ var nodes = exports.nodes = {
                 context.push();
 
                 function inner(p, c, idx, block_list, next) {
-                    c.evaluate( context, function (error, result) {
+                    c.evaluate(context, function (error, result) {
                         context.set('block', { super: result });
                         next(error, result);
                     });
                 }
-                iter.reduce( context.blocks[name], inner, '', function (error, result) {
+                iter.reduce(context.blocks[name], inner, '', function (error, result) {
                     context.pop();
                     callback(error, result);
                 });
@@ -534,7 +535,7 @@ var nodes = exports.nodes = {
         return function (context, callback) {
             var before = context.autoescaping;
             context.autoescaping = enable;
-            node_list.evaluate( context, function ( error, result ) {
+            node_list.evaluate(context, function (error, result) {
                 context.autoescaping = before;
                 callback(error, result);
             });
@@ -664,11 +665,14 @@ var nodes = exports.nodes = {
 
             var dict = {};
             var grouped = list
-                .map(function (x) { return x[key]; })
-                .filter(function (x) { var val = dict[x]; dict[x] = x; return !val; })
-                .map(function (grp) {
-                    return { grouper: grp, list: list.filter(function (o) { return o[key] === grp }) };
-                });
+                    .map(function (x) { return x[key]; })
+                    .filter(function (x) { var val = dict[x]; dict[x] = x; return !val; })
+                    .map(function (grp) {
+                        return {
+                                grouper: grp,
+                                list: list.filter(function (o) { return o[key] === grp })
+                                };
+                    });
 
             context.set(name, grouped);
             callback(false, '');
@@ -684,7 +688,7 @@ var nodes = exports.nodes = {
             if (url[0] !== '/') { url = '/' + url; }
 
             if (item_name) {
-                context.set( item_name, url);
+                context.set(item_name, url);
                 callback(false, '');
             } else {
                 callback(false, url);
@@ -694,7 +698,7 @@ var nodes = exports.nodes = {
 
     SetNode: function (node_list, name) {
         return function (context, callback) {
-            node_list.evaluate( context, function (error, result) {
+            node_list.evaluate(context, function (error, result) {
                 context.set(name, result);
                 callback(error, '');
             });

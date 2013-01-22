@@ -68,7 +68,7 @@ exports.cap_first = cap_first;
 
 function str_repeat(i, m) { for (var o = []; m > 0; o[--m] = i); return(o.join('')); }
 
-function sprintf () {
+function sprintf() {
     var i = 0, a, f = arguments[i++], o = [], m, p, c, x;
     while (f) {
         if (m = /^[^\x25]+/.exec(f)) o.push(m[0]);
@@ -118,7 +118,7 @@ function titleCaps(title) {
     while (true) {
         var m = split.exec(title);
 
-        parts.push( title.substring(index, m ? m.index : title.length)
+        parts.push(title.substring(index, m ? m.index : title.length)
                 .replace(/\b([A-Za-z][a-z.'Õ]*)\b/g, function(all) {
                     return /[A-Za-z]\.[A-Za-z]/.test(all) ? all : upper(all);
                 })
@@ -169,7 +169,7 @@ exports.center = center;
 /*************************************************************************/
 
 // from: http://phpjs.org/functions/wordwrap, all credit to authors below
-function wordwrap (str, int_width, str_break, cut) {
+function wordwrap(str, int_width, str_break, cut) {
     // Wraps buffer to selected number of characters using string break char
     // version: 909.322
     // discuss at: http://phpjs.org/functions/wordwrap
@@ -185,8 +185,8 @@ function wordwrap (str, int_width, str_break, cut) {
     // *     example 3: wordwrap('Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.');
     // *     returns 3: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod \ntempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim \nveniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea \ncommodo consequat.'
     // PHP Defaults
-    var m = ((arguments.length >= 2) ? arguments[1] : 75   );
-    var b = ((arguments.length >= 3) ? arguments[2] : "\n" );
+    var m = ((arguments.length >= 2) ? arguments[1] : 75);
+    var b = ((arguments.length >= 3) ? arguments[2] : "\n");
     var c = ((arguments.length >= 4) ? arguments[3] : false);
 
     var i, j, l, s, r;
