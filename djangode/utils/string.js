@@ -14,8 +14,8 @@ var util = require('util');
 function smart_split(s) {
     // regular expression from django/utils/text.py in Django project.
     var re = /([^\s"]*"(?:[^"\\]*(?:\\.[^"\\]*)*)"\S*|[^\s']*'(?:[^'\\]*(?:\\.[^'\\]*)*)'\S*|\S+)/g,
-        out = [],
-        m = false;
+    out = [],
+    m = false;
 
     while (m = re.exec(s)) {
         out.push(m[0]);
@@ -42,8 +42,8 @@ exports.cap_first = cap_first;
 
 
 /*************************************************************************
-* sprintf() and str_repeat() from http://code.google.com/p/sprintf/
-*/
+ * sprintf() and str_repeat() from http://code.google.com/p/sprintf/
+ */
 
 /**
  * sprintf() for JavaScript v.0.4
@@ -106,47 +106,50 @@ exports.sprintf = sprintf;
 exports.str_repeat = str_repeat;
 
 /*************************************************************************
-* titleCaps from http://ejohn.org/files/titleCaps.js (by John Resig)
-*/
+ * titleCaps from http://ejohn.org/files/titleCaps.js (by John Resig)
+ */
 
 var small = "(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|v[.]?|via|vs[.]?)";
 var punct = "([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]*)";
 
-var titleCaps = function(title){
+function titleCaps(title) {
     var parts = [], split = /[:.;?!] |(?: |^)["Ò]/g, index = 0;
 
     while (true) {
         var m = split.exec(title);
 
         parts.push( title.substring(index, m ? m.index : title.length)
-            .replace(/\b([A-Za-z][a-z.'Õ]*)\b/g, function(all){
-                return /[A-Za-z]\.[A-Za-z]/.test(all) ? all : upper(all);
-            })
-            .replace(RegExp("\\b" + small + "\\b", "ig"), lower)
-            .replace(RegExp("^" + punct + small + "\\b", "ig"), function(all, punct, word){
-                return punct + upper(word);
-            })
-            .replace(RegExp("\\b" + small + punct + "$", "ig"), upper));
+        .replace(/\b([A-Za-z][a-z.'Õ]*)\b/g, function(all) {
+            return /[A-Za-z]\.[A-Za-z]/.test(all) ? all : upper(all);
+        })
+        .replace(RegExp("\\b" + small + "\\b", "ig"), lower)
+        .replace(RegExp("^" + punct + small + "\\b", "ig"), function(all, punct, word) {
+            return punct + upper(word);
+        })
+        .replace(RegExp("\\b" + small + punct + "$", "ig"), upper));
 
         index = split.lastIndex;
 
-        if ( m ) parts.push( m[0] );
-        else break;
+        if (m) {
+            parts.push(m[0]);
+        } else {
+            break;
+        }
     }
 
     return parts.join("").replace(/ V(s?)\. /ig, " v$1. ")
-        .replace(/(['Õ])S\b/ig, "$1s")
-        .replace(/\b(AT&T|Q&A)\b/ig, function(all){
-            return all.toUpperCase();
-        });
+    .replace(/(['Õ])S\b/ig, "$1s")
+    .replace(/\b(AT&T|Q&A)\b/ig, function(all) {
+        return all.toUpperCase();
+    });
 };
 
-function lower(word){
+function lower(word) {
     return word.toLowerCase();
 }
 
-function upper(word){
-  return word.substr(0,1).toUpperCase() + word.substr(1);
+function upper(word) {
+    return word.substr(0, 1).toUpperCase() + word.substr(1);
 }
 
 exports.titleCaps = titleCaps;
@@ -193,9 +196,9 @@ function wordwrap (str, int_width, str_break, cut) {
         return str;
     }
     for (i = -1, l = (r = str.split(/\r\n|\n|\r/)).length; ++i < l; r[i] += s) {
-        for (s = r[i], r[i] = ""; s.length > m; r[i] += s.slice(0, j) + ((s = s.slice(j)).length ? b : "")){
+        for (s = r[i], r[i] = ""; s.length > m; r[i] += s.slice(0, j) + ((s = s.slice(j)).length ? b : "")) {
             j = c == 2 || (j = s.slice(0, m + 1).match(/\S*(\s)?$/))[1] ? m : j.input.length - j[0].length ||
-                c == 1 && m || j.input.length + (j = s.slice(m).match(/^\S*/)).input.length;
+            c == 1 && m || j.input.length + (j = s.slice(m).match(/^\S*/)).input.length;
         }
     }
     return r.join("\n");
@@ -254,4 +257,3 @@ exports.regex_to_string = function (re, group_replacements) {
 
     return s;
 }
-
