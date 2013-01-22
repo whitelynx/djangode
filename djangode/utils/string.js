@@ -119,14 +119,14 @@ function titleCaps(title) {
         var m = split.exec(title);
 
         parts.push( title.substring(index, m ? m.index : title.length)
-        .replace(/\b([A-Za-z][a-z.'Õ]*)\b/g, function(all) {
-            return /[A-Za-z]\.[A-Za-z]/.test(all) ? all : upper(all);
-        })
-        .replace(RegExp("\\b" + small + "\\b", "ig"), lower)
-        .replace(RegExp("^" + punct + small + "\\b", "ig"), function(all, punct, word) {
-            return punct + upper(word);
-        })
-        .replace(RegExp("\\b" + small + punct + "$", "ig"), upper));
+                .replace(/\b([A-Za-z][a-z.'Õ]*)\b/g, function(all) {
+                    return /[A-Za-z]\.[A-Za-z]/.test(all) ? all : upper(all);
+                })
+                .replace(RegExp("\\b" + small + "\\b", "ig"), lower)
+                .replace(RegExp("^" + punct + small + "\\b", "ig"), function(all, punct, word) {
+                    return punct + upper(word);
+                })
+                .replace(RegExp("\\b" + small + punct + "$", "ig"), upper));
 
         index = split.lastIndex;
 
@@ -138,10 +138,10 @@ function titleCaps(title) {
     }
 
     return parts.join("").replace(/ V(s?)\. /ig, " v$1. ")
-    .replace(/(['Õ])S\b/ig, "$1s")
-    .replace(/\b(AT&T|Q&A)\b/ig, function(all) {
-        return all.toUpperCase();
-    });
+            .replace(/(['Õ])S\b/ig, "$1s")
+            .replace(/\b(AT&T|Q&A)\b/ig, function(all) {
+                return all.toUpperCase();
+            });
 };
 
 function lower(word) {
