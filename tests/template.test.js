@@ -155,6 +155,23 @@ testcase('Context test');
         assertEquals(tc.plain.a, tc.context.get('a'));
     });
 
+    test('test event handlers', function (tc) {
+        var unrecognizedNames = [];
+        tc.context.on('unrecognizedName', function (name) {
+            unrecognizedNames.push(name);
+        });
+
+        assertEquals(5, tc.context.get('a'));
+        assertEquals('a', tc.context.get("'a'"));
+        assertEquals(undefined, tc.context.get('f'));
+        assertEquals('f', tc.context.get("'f'"));
+
+        assertEquals(['f'], unrecognizedNames);
+
+        // Clean up listener
+        tc.context.getListeners('unrecognizedName').pop();
+    });
+
 testcase('parser')
     test_async('should parse', function (testcontext, complete) {
         t = parse('hest');

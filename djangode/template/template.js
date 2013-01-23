@@ -383,6 +383,7 @@ function Context(o) {
     this.blocks = {};
     this.autoescaping = true;
     this.filters = require('./template_defaults').filters;
+    this.listeners = {};
 }
 
 extend(Context.prototype, {
@@ -418,6 +419,7 @@ extend(Context.prototype, {
             }
         }
 
+        this.emit('unrecognizedName', name);
         return undefined;
     },
     keys: function () {
@@ -442,6 +444,21 @@ extend(Context.prototype, {
     },
     pop: function () {
         return this.scope.shift();
+    },
+    getListeners: function (event) {
+        if(!this.listeners.hasOwnProperty(event)) {
+            this.listeners[event] = [];
+        }
+        return this.listeners[event];
+    },
+    emit: function (event/*, ...*/) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        this.getListeners(event).forEach(function eachListener(listener) {
+            listener.apply(this, args);
+        });
+    },
+    on: function (event, callback) {
+        this.getListeners(event).push(callback);
     },
 });
 
