@@ -2,6 +2,7 @@
 /*global require, process, module */
 
 var util = require('util');
+var EventEmitter = require('events').EventEmitter;
 var string_utils = require('../utils/string');
 var html = require('../utils/html');
 var iter = require('../utils/iter');
@@ -393,6 +394,8 @@ function Context(o) {
     this.node_stack = [];
 }
 
+util.inherits(Context, EventEmitter);
+
 extend(Context.prototype, {
     get: function (name) {
 
@@ -452,21 +455,6 @@ extend(Context.prototype, {
     pop: function () {
         return this.scope.shift();
     },
-    getListeners: function (event) {
-        if(!this.listeners.hasOwnProperty(event)) {
-            this.listeners[event] = [];
-        }
-        return this.listeners[event];
-    },
-    emit: function (event/*, ...*/) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        this.getListeners(event).forEach(function eachListener(listener) {
-            listener.apply(this, args);
-        });
-    },
-    on: function (event, callback) {
-        this.getListeners(event).push(callback);
-    },
 });
 
 
@@ -477,6 +465,8 @@ function Template(input, filename) {
     this.node_list = this.parser.parse();
     this.listeners = {};
 }
+
+util.inherits(Template, EventEmitter);
 
 extend(Template.prototype, {
     render: function (o, callback) {
@@ -506,21 +496,6 @@ extend(Template.prototype, {
                 callback(false, rendered);
             }
         });
-    },
-    getListeners: function (event) {
-        if(!this.listeners.hasOwnProperty(event)) {
-            this.listeners[event] = [];
-        }
-        return this.listeners[event];
-    },
-    emit: function (event/*, ...*/) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        this.getListeners(event).forEach(function eachListener(listener) {
-            listener.apply(this, args);
-        });
-    },
-    on: function (event, callback) {
-        this.getListeners(event).push(callback);
     },
 });
 
