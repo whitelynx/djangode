@@ -176,6 +176,7 @@ testcase('parser')
     test_async('should parse', function (testcontext, complete) {
         t = parse('hest');
         t.render({}, function (error, result) {
+            assertIsFalse(error, complete);
             assertEquals('hest', result, complete);
             end_async_test(complete);
         });
@@ -188,6 +189,7 @@ testcase('parser')
     test_async('should parse "%"', function (testcontext, complete) {
         t = parse('1 % of this, this is 100% nice! %');
         t.render({}, function (error, result) {
+            assertIsFalse(error, complete);
             assertEquals('1 % of this, this is 100% nice! %', result, complete);
             end_async_test(complete);
         });
@@ -203,6 +205,7 @@ testcase('nodelist evaluate');
         node_list.append(function (context, callback) { callback(false, ' med lang hals'); }, 'test');
 
         node_list.evaluate(context, function (error, result) {
+            assertIsFalse(error, complete);
             assertEquals('hestgiraf med lang hals', result, complete);
             end_async_test(complete);
         });
