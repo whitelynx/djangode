@@ -306,15 +306,21 @@ function make_nodelist() {
     var node_list = [];
     node_list.evaluate = function (context, callback) {
         iter.reduce(this, function (p, c, idx, list, next) {
-            c(context, function (error, result) { next(error, p + result); });
+            context.node_stack = context.node_stack || []; // Ensure there's a node stack on the context.
+            context.node_stack.unshift(c);
+            c(context, function (error, result) {
+                context.node_stack.shift();
+                next(error, p + result);
+            });
         }, '', callback);
     };
     node_list.only_types = function (/*args*/) {
         var args = Array.prototype.slice.apply(arguments);
         return this.filter(function (x) { return args.indexOf(x.type) > -1; });
     };
-    node_list.append = function (node, type) {
-        node.type = type;
+    node_list.append = function (node, token) {
+        node.token = token;
+        node.type = token.type || token;
         this.push(node);
     };
     return node_list;
@@ -343,7 +349,7 @@ extend(Parser.prototype, {
 
             tag = this.tags[token.type];
             if (tag && typeof tag === 'function') {
-                node_list.append(tag(this, token), token.type);
+                node_list.append(tag(this, token), token);
             } else {
                 //throw new errors.TemplateParseError(this.filename, 'Unknown tag: ' + token[0]);
                 node_list.append(
@@ -384,6 +390,7 @@ function Context(o) {
     this.autoescaping = true;
     this.filters = require('./template_defaults').filters;
     this.listeners = {};
+    this.node_stack = [];
 }
 
 extend(Context.prototype, {
@@ -419,7 +426,7 @@ extend(Context.prototype, {
             }
         }
 
-        this.emit('unrecognizedName', name);
+        this.emit('unrecognizedName', name, this.node_stack[0]);
         return undefined;
     },
     keys: function () {
@@ -466,8 +473,9 @@ extend(Context.prototype, {
 /*********** Template **********************************/
 
 function Template(input, filename) {
-    var parser = new Parser(input, filename);
-    this.node_list = parser.parse();
+    this.parser = new Parser(input, filename);
+    this.node_list = this.parser.parse();
+    this.listeners = {};
 }
 
 extend(Template.prototype, {
@@ -477,6 +485,16 @@ extend(Template.prototype, {
 
         var context = (o instanceof Context) ? o : new Context(o || {});
         context.extends = '';
+
+        var self = this;
+        context.on('unrecognizedName', function (name, current_node) {
+            var line = (current_node && current_node.token) ? current_node.token.lineNum : undefined;
+            var col = (current_node && current_node.token) ? current_node.token.column : undefined;
+
+            var filename = self.parser.filename;
+
+            self.emit('unrecognizedName', name, filename, line, col);
+        });
 
         this.node_list.evaluate(context, function (error, rendered) {
             if (error) { return callback(error); }
@@ -488,7 +506,22 @@ extend(Template.prototype, {
                 callback(false, rendered);
             }
         });
-    }
+    },
+    getListeners: function (event) {
+        if(!this.listeners.hasOwnProperty(event)) {
+            this.listeners[event] = [];
+        }
+        return this.listeners[event];
+    },
+    emit: function (event/*, ...*/) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        this.getListeners(event).forEach(function eachListener(listener) {
+            listener.apply(this, args);
+        });
+    },
+    on: function (event, callback) {
+        this.getListeners(event).push(callback);
+    },
 });
 
 /********************************************************/
