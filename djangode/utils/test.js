@@ -226,37 +226,37 @@ with (exports.dsl) {
     testcase('Testing testsystem')
         test('two should equal two', function () {
             assertEquals(2, 2);
-            shouldNotThrow( assertEquals, [2,2] );
+            shouldNotThrow(assertEquals, [2, 2]);
         })
         test('four should not equal two', function () {
-            shouldThrow( assertEquals, [2,4] );
+            shouldThrow(assertEquals, [2, 4]);
         })
         test('broken function should throw', function () {
-            shouldThrow( broken );
+            shouldThrow(broken);
         })
         test('arrays should be equal', function () {
-            assertEquals([1,2,3,4], [1,2,3,4]);
+            assertEquals([1, 2, 3, 4], [1, 2, 3, 4]);
         })
         test('different arrays should not be equal', function () {
-            shouldThrow( assertEquals, [ [1,2,3,4], [1,2,3] ]);
+            shouldThrow(assertEquals, [[1, 2, 3, 4], [1, 2, 3]]);
         })
         test('regexes should be equal', function () {
-            assertEquals( /abc/, /abc/ );
+            assertEquals(/abc/, /abc/);
         })
         test('different regexes should not be equal', function () {
-            shouldThrow( assertEquals, [ /abc/, /edf/ ]);
+            shouldThrow(assertEquals, [/abc/, /edf/]);
         })
         test('dates should be equal', function () {
-            assertEquals( new Date(376110000000) , new Date(376110000000) );
+            assertEquals(new Date(376110000000) , new Date(376110000000));
         })
         test('different dates should not be equal', function () {
-            shouldThrow( assertEquals, [ new Date(376110000000), new Date() ]);
+            shouldThrow(assertEquals, [new Date(376110000000), new Date()]);
         })
         test('objects should be equal', function () {
-            assertEquals( {a: 'hest', b: 5, c: [1,2,3]}, {a: 'hest', b: 5, c: [1,2,3]} );
+            assertEquals({a: 'hest', b: 5, c: [1, 2, 3]}, {a: 'hest', b: 5, c: [1, 2, 3]});
         })
         test('different objects should not be equal', function () {
-            shouldThrow( assertEquals, [ {a: 'hest', b: 5, c: [1,2,3]}, {a: 'hest', b: 5, c: [2,3]} ]);
+            shouldThrow(assertEquals, [{a: 'hest', b: 5, c: [1, 2, 3]}, {a: 'hest', b: 5, c: [2, 3]}]);
         })
 
     testcase('Testing async tests');
@@ -273,8 +273,8 @@ with (exports.dsl) {
             setTimeout(function () {
                 assertEquals('hest', 'hest', callback);
                 assertEquals(2, 2, callback);
-                shouldThrow(assertEquals, [2,4], null, callback)
-                end_async_test( callback );
+                shouldThrow(assertEquals, [2, 4], null, callback)
+                end_async_test(callback);
             });
         });
 

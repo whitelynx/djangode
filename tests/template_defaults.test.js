@@ -52,7 +52,7 @@ testcase('Test dictsort filter');
             {'name': 'joe', 'age': 31}
         ];
         var before = list.slice(0);
-        assertEquals([ list[1], list[2], list[0] ], filters.dictsort(list, 'name') );
+        assertEquals([list[1], list[2], list[0]], filters.dictsort(list, 'name'));
         assertEquals(before, list);
     });
 
@@ -64,7 +64,7 @@ testcase('dictsortreversed filter');
             {'name': 'joe', 'age': 31}
         ];
         var before = list.slice(0);
-        assertEquals([ list[0], list[2], list[1] ], filters.dictsortreversed(list, 'name') );
+        assertEquals([list[0], list[2], list[1]], filters.dictsortreversed(list, 'name'));
         assertEquals(before, list);
     });
 
@@ -145,7 +145,7 @@ testcase('get_digit');
 
 testcase('join filter')
     test('should join list', function () {
-        assertEquals('1, 2, 3, 4', filters.join([1,2,3,4], ', '));
+        assertEquals('1, 2, 3, 4', filters.join([1, 2, 3, 4], ', '));
         assertEquals('', filters.join('1,2,3,4', ', '));
     });
 testcase('last filter')
@@ -156,17 +156,17 @@ testcase('last filter')
     });
 testcase('length filter')
     test('should return correct length', function () {
-        assertEquals(5, filters.length([1,2,3,4,5]));
+        assertEquals(5, filters.length([1, 2, 3, 4, 5]));
         assertEquals(4, filters.length('hest'));
         assertEquals(0, filters.length(16));
     });
 testcase('length_is filter')
     test('should return true on correct length', function () {
-        assertEquals(true, filters.length_is([1,2,3,4,5], 5));
+        assertEquals(true, filters.length_is([1, 2, 3, 4, 5], 5));
         assertEquals(true, filters.length_is('hest', 4));
     });
     test('should return false on incorrect length or bad arguments', function () {
-        assertEquals(false, filters.length_is([1,2,3,4,5], 2));
+        assertEquals(false, filters.length_is([1, 2, 3, 4, 5], 2));
         assertEquals(false, filters.length_is('hest', 16));
         assertEquals(false, filters.length_is(16, 4));
         assertEquals(false, filters.length_is('hest'));
@@ -275,7 +275,7 @@ testcase('pluralize');
     });
 testcase('pprint');
     test("should not throw and not return ''", function () {
-        var response = filters.pprint( filters );
+        var response = filters.pprint(filters);
         if (!response) { fail('response is empty!'); }
     });
 testcase('random');
@@ -288,7 +288,7 @@ testcase('random');
         }
     });
     test('should return empty string when passed non array', function () {
-        assertEquals('', filters.random( 25 ));
+        assertEquals('', filters.random(25));
     });
 testcase('removetags');
     test('should remove tags', function () {
@@ -307,18 +307,18 @@ testcase('rjust')
         assertEquals('he', filters.rjust('hest', 2));
     });
 testcase('slice')
-    var arr = [0,1,2,3,4,5,6,7,8,9];
+    var arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     test('slice should slice like python', function () {
-        assertEquals([0,1,2,3], filters.slice(arr, ":4"));
-        assertEquals([6,7,8,9], filters.slice(arr, "6:"));
-        assertEquals([2,3,4], filters.slice(arr, "2:5"));
-        assertEquals([2,5,8], filters.slice(arr, "2::3"));
-        assertEquals([2,5], filters.slice(arr, "2:6:3"));
+        assertEquals([0, 1, 2, 3], filters.slice(arr, ":4"));
+        assertEquals([6, 7, 8, 9], filters.slice(arr, "6:"));
+        assertEquals([2, 3, 4], filters.slice(arr, "2:5"));
+        assertEquals([2, 5, 8], filters.slice(arr, "2::3"));
+        assertEquals([2, 5], filters.slice(arr, "2:6:3"));
     });
     test('slice should handle bad values', function () {
-        assertEquals([],        filters.slice(36, ":4"));
-        assertEquals([0,1,2,3,4,5,6,7,8,9], filters.slice(arr, 'hest'));
-        assertEquals([0,1,2,3,4,5,6,7,8,9], filters.slice(arr));
+        assertEquals([], filters.slice(36, ":4"));
+        assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], filters.slice(arr, 'hest'));
+        assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], filters.slice(arr));
     });
 testcase('slugify');
     test('should slugify correctly', function () {

@@ -184,7 +184,7 @@ var filters = exports.filters = {
     },
     pprint: function (value, arg) { return JSON.stringify(value); },
     random: function (value, arg) {
-        return (value instanceof Array) ? value[ Math.floor(Math.random() * value.length) ] : '';
+        return (value instanceof Array) ? value[Math.floor(Math.random() * value.length)] : '';
     },
     removetags: function (value, arg, safety) {
         arg = String(arg).replace(/\s+/g, '|');

@@ -26,4 +26,3 @@ exports.reduce = function reduce(array, iter_callback, initial, result_callback)
         }
     })(false, initial);
 }
-

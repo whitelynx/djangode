@@ -20,7 +20,7 @@
         mustbe - object, an object with numbers as keys and strings or arrays of strings as
                  values. Arguments specified (by their number) in this object must match one
                  of the values, if they are provided in the token.
-    
+
     Example:
         // token contains "with 100 as hest"
         list = get_args_from_token(token, { exclude: 2 }); // list is [100, "hest"]
@@ -87,4 +87,3 @@ exports.simple_tag = function simple_tag(node, options) {
         return node.apply(null, parts);
     };
 }
-

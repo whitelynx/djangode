@@ -10,7 +10,7 @@ testcase('Test tokenizer');
     });
     test('no empty tokens between tags', function () {
         var tokens = tokenize('{{tag}}');
-        assertEquals( [{type:'variable', contents: 'tag'}], tokens );
+        assertEquals([{type: 'variable', contents: 'tag'}], tokens);
     });
     test('split token contents', function () {
         assertEquals(
@@ -22,34 +22,34 @@ testcase('Test tokenizer');
             tokenize('her er "noget der er i qoutes" og noget der ikke er')[0].split_contents()
         );
 
-        assertEquals( ['date:"F j, Y"'], tokenize('date:"F j, Y"')[0].split_contents());
-        assertEquals( ['date:', '"F j, Y"'], tokenize('date: "F j, Y"')[0].split_contents());
+        assertEquals(['date:"F j, Y"'], tokenize('date:"F j, Y"')[0].split_contents());
+        assertEquals(['date:', '"F j, Y"'], tokenize('date: "F j, Y"')[0].split_contents());
     });
     test('skip inline comments', function () {
         var tokens = tokenize('{#tag#}');
-        assertEquals( [], tokens );
+        assertEquals([], tokens);
     });
 
 testcase('Filter Expression tests');
     test('should parse valid syntax', function () {
         assertEquals(
-            { variable: 'item', filter_list: [ { name: 'add' } ] },
+            { variable: 'item', filter_list: [{ name: 'add' }] },
             new FilterExpression("item|add")
         );
         assertEquals(
-            { variable: 'item.subitem', filter_list: [ { name: 'add' }, { name: 'sub' } ] },
+            { variable: 'item.subitem', filter_list: [{ name: 'add' }, { name: 'sub' }] },
             new FilterExpression("item.subitem|add|sub")
         );
         assertEquals(
-            { variable: 'item', filter_list: [ { name: 'add', var_arg: 5 }, { name: 'sub', arg: "2" } ] },
+            { variable: 'item', filter_list: [{ name: 'add', var_arg: 5 }, { name: 'sub', arg: "2" }] },
             new FilterExpression('item|add:5|sub:"2"')
         );
         assertEquals(
-            { variable: 'item', filter_list: [ { name: 'concat', arg: 'heste er naijs' } ] },
+            { variable: 'item', filter_list: [{ name: 'concat', arg: 'heste er naijs' }] },
             new FilterExpression('item|concat:"heste er naijs"')
         );
         assertEquals(
-            { variable: 'person_name', filter_list: [ ] },
+            { variable: 'person_name', filter_list: [] },
             new FilterExpression('person_name')
         );
         assertEquals(
@@ -109,17 +109,17 @@ testcase('Filter Expression tests');
     });
 
 testcase('Context test');
-    setup( function () {
+    setup(function () {
         var tc = {
             plain: {
                 a: 5,
                 b: 'hest',
                 c: true,
-                d: [ 1, 2, 3, 4 ]
+                d: [1, 2, 3, 4]
             }
         };
 
-        var clone = JSON.parse( JSON.stringify(tc.plain) );
+        var clone = JSON.parse(JSON.stringify(tc.plain));
         tc.context = new Context(clone);
 
         return tc;
@@ -160,19 +160,19 @@ testcase('parser')
         t = parse('hest');
         t.render({}, function (error, result) {
             assertEquals('hest', result, complete);
-            end_async_test( complete );
+            end_async_test(complete);
         });
     });
     test('node_list only_types should return only requested typed', function () {
         t = parse('{% comment %}hest{% endcomment %}hest{% comment %}laks{% endcomment %}{% hest %}');
-        assertEquals(['comment','comment'], t.node_list.only_types('comment').map(function(x){return x.type}));
-        assertEquals(['text','UNKNOWN'], t.node_list.only_types('text', 'UNKNOWN').map(function(x){return x.type}));
+        assertEquals(['comment', 'comment'], t.node_list.only_types('comment').map(function(x){return x.type}));
+        assertEquals(['text', 'UNKNOWN'], t.node_list.only_types('text', 'UNKNOWN').map(function(x){return x.type}));
     });
     test_async('should parse "%"', function (testcontext, complete) {
         t = parse('1 % of this, this is 100% nice! %');
         t.render({}, function (error, result) {
             assertEquals('1 % of this, this is 100% nice! %', result, complete);
-            end_async_test( complete );
+            end_async_test(complete);
         });
     });
 
@@ -181,13 +181,13 @@ testcase('nodelist evaluate');
 
         var context = {};
         var node_list = make_nodelist();
-        node_list.append( function (context, callback) { callback(false, 'hest'); }, 'test');
-        node_list.append( function (context, callback) { callback(false, 'giraf'); }, 'test');
-        node_list.append( function (context, callback) { callback(false, ' med lang hals'); }, 'test');
+        node_list.append(function (context, callback) { callback(false, 'hest'); }, 'test');
+        node_list.append(function (context, callback) { callback(false, 'giraf'); }, 'test');
+        node_list.append(function (context, callback) { callback(false, ' med lang hals'); }, 'test');
 
-        node_list.evaluate( context, function (error, result) {
+        node_list.evaluate(context, function (error, result) {
             assertEquals('hestgiraf med lang hals', result, complete);
-            end_async_test( complete );
+            end_async_test(complete);
         });
     });
 
