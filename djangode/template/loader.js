@@ -4,6 +4,7 @@
 var util = require('util');
 var fs = require('fs');
 var path = require('path');
+var EventEmitter = require('events').EventEmitter;
 
 var template_system = require('./template');
 var paths = require('../utils/paths');
@@ -129,6 +130,8 @@ function FSTemplate(name)
     cache[name] = this;
 }
 
+util.inherits(FSTemplate, EventEmitter);
+
 /**
  * Find name and modification time of this template's source file.
  *
@@ -181,6 +184,9 @@ FSTemplate.prototype.load = function (callback) {
                             if(template)
                             {
                                 template.last_mtime = mtime;
+                                template.on('unrecognizedName', function (name, filename, line, col) {
+                                    self.emit('unrecognizedName', name, filename, line, col);
+                                });
                             }
 
                             callback(error, template)
@@ -220,6 +226,9 @@ FSTemplate.prototype.render = function (context, callback) {
                                 }
 
                                 template.last_mtime = mtime;
+                                template.on('unrecognizedName', function (name, filename, line, col) {
+                                    self.emit('unrecognizedName', name, filename, line, col);
+                                });
 
                                 template.loaded_template.render(context, callback);
                             });
