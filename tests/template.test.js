@@ -169,7 +169,7 @@ testcase('Context test');
         assertEquals(['f'], unrecognizedNames);
 
         // Clean up listener
-        tc.context.getListeners('unrecognizedName').pop();
+        tc.context.removeAllListeners('unrecognizedName');
     });
 
 testcase('parser')
