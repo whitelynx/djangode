@@ -648,7 +648,7 @@ var nodes = exports.nodes = {
         }
     },
 
-    WithRatioNode: function (current, max, constant) {
+    WidthRatioNode: function (current, max, constant) {
         return function (context, callback) {
             current_val = current.resolve(context);
             max_val = max.resolve(context);
@@ -992,7 +992,7 @@ var tags = exports.tags = {
     'widthratio': function (parser, token) {
         var parts = get_args_from_token(token, { argcount: 3 });
         parts = parts.map(mkfilterexpr, parser);
-        return nodes.WithRatioNode(parts[0], parts[1], parts[2]);
+        return nodes.WidthRatioNode(parts[0], parts[1], parts[2]);
     },
     'regroup': function (parser, token) {
         var parts = get_args_from_token(token, { argcount: 5, mustbe: { 2: 'by', 4: 'as' }, exclude: [2, 4] });
