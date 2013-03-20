@@ -390,7 +390,6 @@ function Context(o) {
     this.blocks = {};
     this.autoescaping = true;
     this.filters = require('./template_defaults').filters;
-    this.listeners = {};
     this.node_stack = [];
 }
 
@@ -461,15 +460,25 @@ extend(Context.prototype, {
 /*********** Template **********************************/
 
 function Template(input, filename) {
-    this.parser = new Parser(input, filename);
-    this.node_list = this.parser.parse();
-    this.listeners = {};
+    this.set_source(input, filename);
 }
 
 util.inherits(Template, EventEmitter);
 
 extend(Template.prototype, {
-    render: function (o, callback) {
+    set_source: function set_source(input, filename) {
+        if(input)
+        {
+            this.parser = new Parser(input, filename);
+            this.node_list = this.parser.parse();
+        }
+        else
+        {
+            this.parser = undefined;
+            this.node_list = undefined;
+        }
+    },
+    render: function render(o, callback) {
 
         if (!callback) { throw 'template.render() must be called with a callback'; }
 
