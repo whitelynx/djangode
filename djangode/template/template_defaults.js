@@ -129,8 +129,8 @@ var filters = exports.filters = {
         return (value instanceof Array) ? value.join(arg) : '';
     },
     last: function (value, arg) { return ((value instanceof Array) && value.length) ? value[value.length - 1] : ''; },
-    length: function (value, arg) { return value.length ? value.length : 0; },
-    length_is: function (value, arg) { return value.length === arg; },
+    length: function (value, arg) { return ((value !== undefined) && value.length) ? value.length : 0; },
+    length_is: function (value, arg) { return (value !== undefined) && value.length === arg; },
     linebreaks: function (value, arg, safety) {
         var out = html.linebreaks("" + value, { escape: !safety.is_safe && safety.must_escape });
         safety.is_safe = true;
