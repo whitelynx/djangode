@@ -13,7 +13,7 @@ exports.reduce = function reduce(array, iter_callback, initial, result_callback)
         }
 
         if (index < array.length) {
-            process.nextTick(function () {
+            setImmediate(function () {
                 try {
                     index = index + 1;
                     iter_callback(value, array[index - 1], index, array, inner);

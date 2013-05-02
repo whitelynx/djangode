@@ -133,7 +133,7 @@ exports.dsl = {
 
                             if (testcase.teardown) { testcase.teardown(context); }
 
-                            process.nextTick(run_tests);
+                            setImmediate(run_tests);
                         }
 
                         try {
@@ -145,7 +145,7 @@ exports.dsl = {
                     } else {
                         // no more tests
                         util.puts('----');
-                        process.nextTick(run_testcases);
+                        setImmediate(run_testcases);
                     }
                 })();
             } else {
