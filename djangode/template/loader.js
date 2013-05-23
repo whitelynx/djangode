@@ -79,19 +79,19 @@ function flush_cache()
     cache = {};
 }
 
-function set_path(path)
+function set_path(tpath)
 {
-    if (typeof path == 'string')
+    if (typeof tpath == 'string')
     {
-        path = [path];
+        tpath = [tpath];
     }
 
-    template_path = path;
+    template_path = tpath.map(function(p) { return path.resolve(p); });
 }
 
-function add_path(path)
+function add_path(tpath)
 {
-    template_path.push(path);
+    template_path.push(path.resolve(tpath));
 }
 
 function get_path()
@@ -99,19 +99,19 @@ function get_path()
     return template_path.slice();
 }
 
-function set_templatetags_path(path)
+function set_templatetags_path(ttpath)
 {
-    if (typeof path == 'string')
+    if (typeof ttpath == 'string')
     {
-        path = [path];
+        ttpath = [ttpath];
     }
 
-    templatetags_path = path;
+    templatetags_path = ttpath.map(function(p) { return path.resolve(p); });
 }
 
-function add_templatetags_path(path)
+function add_templatetags_path(ttpath)
 {
-    templatetags_path.push(path);
+    templatetags_path.push(path.resolve(ttpath));
 }
 
 function get_templatetags_path()
