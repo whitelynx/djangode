@@ -56,6 +56,12 @@ testcase('fornode')
         '{% for item in unset_variable %} {{ item }} {% empty %}no items{% endfor %}');
     make_parse_and_execute_test(' 0  1  2 ',
         '{% for item in number|range %} {{ item }} {% empty %}no items{% endfor %}');
+    make_parse_and_execute_test('  FIRST POST!  0   1   2 ',
+        '{% for item in number|range %} {% if forloop.first %} FIRST POST! {% endif %} {{ item }} {% empty %}no items{% endfor %}');
+    make_parse_and_execute_test('  FIRST POST!  0   1   2 ',
+        '{% for item in number|range %} {% ifequal forloop.counter 1 %} FIRST POST! {% endifequal %} {{ item }} {% empty %}no items{% endfor %}');
+    make_parse_and_execute_test('  FIRST POST!  0   1   2 ',
+        '{% for item in number|range %} {% ifequal forloop.counter0 0 %} FIRST POST! {% endifequal %} {{ item }} {% empty %}no items{% endfor %}');
 
 testcase('variable')
     setup(function () {
