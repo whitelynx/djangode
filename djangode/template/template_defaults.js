@@ -339,6 +339,7 @@ var nodes = exports.nodes = {
         return function (context, callback) {
             var forloop = { parentloop: context.get('forloop') },
                 list = listname.resolve(context),
+                obj = null,
                 out = '';
 
             if (list instanceof Array) {
@@ -348,7 +349,8 @@ var nodes = exports.nodes = {
                 list = [];
             }
             else if (list instanceof Object) {
-                list = Object.keys(list);
+                obj = list;
+                list = Object.keys(obj);
             }
             else {
                 throw new errors.NotIterable(list);
@@ -378,6 +380,9 @@ var nodes = exports.nodes = {
                     first: idx === 1,
                     last: idx === list.length
                 });
+                if(obj) {
+                    forloop.value = obj[c];
+                }
                 context.set(itemname, c);
 
                 node_list.evaluate(context, function (error, result) {

@@ -37,6 +37,7 @@ testcase('fornode')
                 items: [1, 2, 3, 4],
                 noitems: [],
                 obj: { a: 1, b: 2, c: { d: 23, e: { f: 'laks' } } },
+                nested: { a: { foo: 'FOO', bar: 'BAR' }, b: { fez: 'FEZ', bleh: 'BLEH' } },
                 number: 3,
                 null_variable: null
                 // unset_variable -> undefined
@@ -48,6 +49,7 @@ testcase('fornode')
     make_parse_and_execute_test('no items',
         '{% for item in noitems %} {{ item }} {% empty %}no items{% endfor %}');
     make_parse_and_execute_test(' a  b  c ', '{% for key in obj %} {{ key }} {% endfor %}');
+    make_parse_and_execute_test(' a:  foo=FOO  bar=BAR   b:  fez=FEZ  bleh=BLEH  ', '{% for key in nested %} {{ key }}: {% for inner in forloop.value %} {{ inner }}={{ forloop.value }} {% endfor %} {% endfor %}');
     make_parse_and_execute_test('no items',
         '{% for item in null_variable %} {{ item }} {% empty %}no items{% endfor %}');
     make_parse_and_execute_test('no items',
