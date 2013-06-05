@@ -63,6 +63,9 @@ testcase('fornode')
     make_parse_and_execute_test('  FIRST POST!  0   1   2 ',
         '{% for item in number|range %} {% ifequal forloop.counter0 0 %} FIRST POST! {% endifequal %} {{ item }} {% empty %}no items{% endfor %}');
 
+    make_parse_and_execute_test(' a [true, false, 1, ]:  foo=FOO [true, false, 1, [object Object]] bar=BAR [false, true, 2, [object Object]]  b [false, true, 2, ]:  fez=FEZ [true, false, 1, [object Object]] bleh=BLEH [false, true, 2, [object Object]] ',
+        '{% for key in nested %} {{ key }} [{{ forloop.first }}, {{ forloop.last }}, {{ forloop.counter }}, {{ forloop.parentloop }}]: {% for inner in forloop.value %} {{ inner }}={{ forloop.value }} [{{ forloop.first }}, {{ forloop.last }}, {{ forloop.counter }}, {{ forloop.parentloop }}]{% endfor %} {% endfor %}');
+
 testcase('variable')
     setup(function () {
         return {
