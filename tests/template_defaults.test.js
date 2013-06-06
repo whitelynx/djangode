@@ -258,6 +258,10 @@ testcase('make_list');
         assertEquals(['J', 'o', 'e', 'l'], filters.make_list('Joel'));
         assertEquals(['1', '2', '3'], filters.make_list('123'));
     });
+testcase('numcomma');
+    test('insert commas in large numbers', function(){
+        assertEquals('1,000', filters.numcomma(1000));
+    });
 testcase('phone2numeric')
     test('convert letters to numbers phone number style', function () {
         assertEquals('800-2655328', filters.phone2numeric('800-COLLECT'));
