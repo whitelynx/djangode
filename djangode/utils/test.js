@@ -2,9 +2,11 @@
 /*global require, process, exports */
 var util = require('util');
 
-var AssertFailedException = function (msg) {
+function AssertFailedException(msg) {
     this.message = msg;
-};
+    Error.call(this, this.message);
+}
+util.inherits(AssertFailedException, Error);
 
 var isEqual = function (expected, actual) {
 
@@ -110,12 +112,14 @@ exports.dsl = {
                                 async_test_has_failed = true;
 
                                 if (error instanceof AssertFailedException) {
-                                    util.puts(' [--] ' + test.name + ': failed. ' + error.message);
+                                    util.puts(' [--] ' + test.name + ': failed. ' + (error.stack || error.message));
                                     failed_cnt++;
                                 } else {
                                     util.print(' [!!] ' + test.name + ': error. ');
                                     if (error.stack && error.type) {
                                         util.puts(error.type + '\n' +  error.stack);
+                                    } else if (error.stack) {
+                                        util.puts(error.stack);
                                     } else {
                                         util.puts(JSON.stringify(error, 0, 2));
                                     }
