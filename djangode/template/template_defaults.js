@@ -35,6 +35,39 @@ NOTE:
     url tag relies on app being set in process.djangode_urls
 */
 
+function parseExpr(tokens, exprWrapper) {
+    exprWrapper = exprWrapper || '%s';
+
+    var identifierRE = /^[!-]?([a-zA-Z_$][^!@#%^&*().+=\[\]{}'"\/\\-]*)/;
+    var keywordsRE = /^(and|or|not)$/;
+
+    tokens = tokens.map(function(token) {
+        var match = keywordsRE.exec(token);
+        if(match && match[0]) {
+            switch(match[0]) {
+                case 'and': return '&&';
+                case 'or': return '||';
+                case 'not': return '!';
+            }
+        }
+        return token;
+    });
+
+    var identifiers = {};
+    tokens.forEach(function(token) {
+        var match = identifierRE.exec(token);
+        if(typeof token == 'string' && match) {
+            identifiers[match[1]] = true;
+        }
+    });
+    identifiers = Object.keys(identifiers);
+
+    var funcDef = identifiers.map(function(identifier) { return util.format('var %s = ctx.get(%j)', identifier, identifier); });
+    funcDef.push(util.format("return " + exprWrapper, tokens.join(' ')));
+
+    return new Function('ctx', funcDef.join(';'));
+}
+
 // Map functions
 function not(x) { return !x; }
 function and(p, c) { return p && c; }
@@ -397,14 +430,11 @@ var nodes = exports.nodes = {
         };
     },
 
-    IfNode: function (item_names, not_item_names, operator, if_node_list, else_node_list) {
+    IfNode: function (exprTokens, if_node_list, else_node_list) {
+        var evalExpr = parseExpr(exprTokens, 'Boolean(%s)');
 
         return function (context, callback) {
-            var items = item_names.map(resolve, context).concat(
-                not_item_names.map(resolve, context).map(not)
-            );
-
-            var isTrue = items.reduce(operator === 'or' ? or : and, true);
+            var isTrue = evalExpr(context);
 
             if (isTrue) {
                 if_node_list.evaluate(context, function (error, result) { callback(error, result); });
@@ -750,39 +780,6 @@ var tags = exports.tags = {
         // get rid of if keyword
         parts.shift();
 
-        var operator = '',
-            item_names = [],
-            not_item_names = [];
-
-        var p, next_should_be_item = true;
-
-        while (p = parts.shift()) {
-            if (next_should_be_item) {
-                if (p === 'not') {
-                    p = parts.shift();
-                    if (!p) {
-                        throw new errors.TemplateError(parser.filename, token,
-                                'unexpected syntax in "if" tag. Expected item name after "not"');
-                    }
-                    not_item_names.push(parser.make_filterexpression(p));
-                } else {
-                    item_names.push(parser.make_filterexpression(p));
-                }
-                next_should_be_item = false;
-            } else {
-                if (p !== 'and' && p !== 'or') {
-                    throw new errors.TemplateError(parser.filename, token,
-                            'unexpected syntax in "if" tag. Expected "and" or "or"');
-                    }
-                if (operator && p !== operator) {
-                    throw new errors.TemplateError(parser.filename, token,
-                            'unexpected syntax in "if" tag. Cannot mix "and" and "or"');
-                }
-                operator = p;
-                next_should_be_item = true;
-            }
-        }
-
         var node_list, else_list;
 
         node_list = parser.parse('else', 'end' + token.type);
@@ -791,7 +788,7 @@ var tags = exports.tags = {
             parser.delete_first_token();
         }
 
-        return nodes.IfNode(item_names, not_item_names, operator, node_list, else_list);
+        return nodes.IfNode(parts, node_list, else_list);
     },
 
     'ifchanged': function (parser, token) {
