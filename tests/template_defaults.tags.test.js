@@ -21,7 +21,7 @@ function make_parse_and_execute_test(expected, tpl, name) {
         var parsed = template.parse(tpl);
         parsed.render(testcontext.obj, function (error, actual) {
             if (error) {
-                fail(error, complete);
+                complete(error);
             } else {
                 assertEquals(expected, actual, complete);
             }
