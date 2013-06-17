@@ -87,7 +87,7 @@ var filters = exports.filters = {
     cut: function (value, arg) { return ("" + value).replace(new RegExp(arg, 'g'), ""); },
     date: function (value, arg) {
         // TODO: this filter may be unsafe...
-        return (value instanceof Date) ? date_utils.format_date(value, arg) : '';
+        return date_utils.format_date(value instanceof Date ? value : new Date(value), arg);
     },
     'default': function (value, arg) {
         // TODO: this filter may be unsafe...
