@@ -308,6 +308,14 @@ function (parser, token) {
 
 Other differences from Django
 -----------------------------
+### Set tag #
+The `set/endset` tag allows you to assign any block of text to a variable,
+including HTML and template text.
+
+### Numcomma filter #
+
+The `numcomma` filter will add commas to any number as appropriate. This mimcs 
+django.contrib.humanize.intcomma, except that it supports all numeric types.
 
 ### Cycle tag ########
 
