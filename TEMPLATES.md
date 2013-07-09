@@ -317,6 +317,9 @@ including HTML and template text.
 The `numcomma` filter will add commas to any number as appropriate. This mimcs 
 django.contrib.humanize.intcomma, except that it supports all numeric types.
 
+### For tag
+Djangode exposes {{ forloop.next }} for lookahead in for loops.
+
 ### Cycle tag ########
 
 The cycle tag does not support the legacy notation `{% cycle row1,row2,row3 %}`.

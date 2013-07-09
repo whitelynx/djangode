@@ -419,7 +419,8 @@ var nodes = exports.nodes = {
                     revcounter: list.length - (idx - 1),
                     revcounter0: list.length - idx,
                     first: idx === 1,
-                    last: idx === list.length
+                    last: idx === list.length,
+                    next: list[idx]
                 });
                 if(obj) {
                     forloop.value = obj[c];
