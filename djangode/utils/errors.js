@@ -8,7 +8,7 @@ function BaseError(name, level /*, message, ...*/)
 {
     this.name = name;
     this.level = level;
-    this.message = util.format.apply(this, Array.prototype.slice.call(arguments, 2))
+    this.message = util.format.apply(this, Array.prototype.slice.call(arguments, 2));
     this.htmlMessage = util.format('<h2>%s</h2><p>%s</p>', name, this.message);
 
     Error.call(this, this.message);
@@ -72,7 +72,7 @@ function InvalidValue(value, message)
 {
     if(message)
     {
-        message = util.format.apply(this, Array.prototype.slice.call(arguments, 2))
+        message = util.format.apply(this, Array.prototype.slice.call(arguments, 1));
     }
     else
     {
@@ -126,7 +126,7 @@ function TemplateError(filename, token, message)
 
     BaseError.call(this, "Template Error", "Critical", 'Template Error at %s:%d:%d: %s', filename, line, col, message);
     this.htmlMessage = util.format(
-            '<h2>Template Error</h2><p><em>in %s on line %d, column %d</em></p><p>%s</p></ul>',
+            '<h2>Template Error</h2><p><em>in %s on line %d, column %d</em></p><p>%s</p>',
             filename, line, col, message
             );
 }
@@ -144,13 +144,34 @@ function TemplateParseError(filename, message)
 
     BaseError.call(this, "Template Parse Error", "Critical", 'Template Parse Error in %s: %s', filename, message);
     this.htmlMessage = util.format(
-            '<h2>Template Parse Error</h2><p><em>in %s</em></p><p>%s</p></ul>',
+            '<h2>Template Parse Error</h2><p><em>in %s</em></p><p>%s</p>',
             filename, message
             );
 }
 
 util.inherits(TemplateParseError, TemplateError);
 
+
+// --------------------------------------------------------------------------------------------------------------------
+// FilterExpression Parse Error
+// --------------------------------------------------------------------------------------------------------------------
+
+function FilterExpressionParseError(expression, charNum, filename, message)
+{
+    filename = filename || '<string>';
+
+    var hint = "Can't parse FilterExpression; ensure that there are no spaces between filters or arguments.";
+    BaseError.call(this, "FilterExpression Parse Error", "Critical",
+            'FilterExpression Parse Error at expression %j, char %s in %s: %s\n%s',
+            expression, charNum, filename, message, hint
+            );
+    this.htmlMessage = util.format(
+            '<h2>Template Parse Error</h2><p><em>at expression %j, char %s in %s</em></p><p>%s</p><p>%s</p>',
+            expression, charNum, filename, message, hint
+            );
+}
+
+util.inherits(FilterExpressionParseError, BaseError);
 
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -163,4 +184,5 @@ module.exports = {
     'NotNumeric': NotNumeric,
     'TemplateError': TemplateError,
     'TemplateParseError': TemplateParseError,
+    'FilterExpressionParseError': FilterExpressionParseError
 };
