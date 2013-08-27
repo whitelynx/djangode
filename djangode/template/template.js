@@ -12,7 +12,7 @@ var errors = require('../utils/errors');
 
 function parse(input, filename) {
     return new Template(input, filename);
-};
+}
 
 function normalize(value) {
     if (typeof value !== 'string') { return value; }
@@ -96,7 +96,7 @@ function tokenize(input) {
     function consume_until() {
         var next, s = '';
         var args = Array.prototype.slice.apply(arguments);
-        while (next = consume(re, input)) {
+        while ((next = consume(re, input))) {
             if (args.indexOf(next) > -1) {
                 return [s, next];
             }
@@ -189,22 +189,22 @@ function FilterExpression(expression, constant) {
     //util.debug(expression + ' => ' + util.inspect(parsed));
 
     if (!parsed) {
-        this.error("Couldn't parse expression: %j", expression);
+        this.error(expression, "Couldn't parse expression!");
     }
     if (constant !== undefined) {
         if (parsed.variable !== undefined || parsed.constant !== undefined) {
-            this.error("Did not expect variable when constant is passed (in expression %j)", expression);
+            this.error(expression, "Did not expect variable when constant is passed!");
         }
         parsed.constant = constant;
     }
 
     while (parsed) {
         if (parsed.constant !== undefined && parsed.variable !== undefined) {
-            this.error("Did not expect both variable and constant (in expression %j)", expression);
+            this.error(expression, "Did not expect both variable and constant!");
         }
         if ((parsed.constant !== undefined || parsed.variable !== undefined) &&
             (this.variable !== undefined || this.constant !== undefined)) {
-            this.error("Did not expect variable or constant at this point (in expression %j)", expression);
+            this.error(expression, "Did not expect variable or constant at this point!");
         }
         if (parsed.constant !== undefined) { this.constant = normalize(parsed.constant); }
         if (parsed.variable !== undefined) { this.variable = normalize(parsed.variable); }
@@ -220,7 +220,7 @@ function FilterExpression(expression, constant) {
 
     //util.debug(expression + ' => ' + util.inspect(this));
 
-};
+}
 
 extend(FilterExpression.prototype, {
 
@@ -238,12 +238,10 @@ extend(FilterExpression.prototype, {
         return token;
     },
 
-    error: function () {
-        var args = Array.prototype.slice.call(arguments, 0);
-        args[0] += "\nCan't parse FilterExpression at char %s; ensure that there are no spaces between filters or arguments.";
-        throw util.format.apply(util,
-            Array.prototype.concat.call(args, [filter_re.lastIndex])
-            );
+    error: function (expression) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        var filename = 'unknown'; // FIXME: Get the filename (and possibly token for line/col numbers) here!
+        throw new errors.FilterExpressionParseError(expression, filter_re.lastIndex, filename, util.format.apply(util, args));
     },
 
     resolve: function (context) {
@@ -453,7 +451,7 @@ extend(Context.prototype, {
     },
     pop: function () {
         return this.scope.shift();
-    },
+    }
 });
 
 
@@ -505,7 +503,7 @@ extend(Template.prototype, {
                 callback(false, rendered);
             }
         });
-    },
+    }
 });
 
 /********************************************************/
@@ -517,5 +515,5 @@ module.exports = {
     'Context': Context,
     'FilterExpression': FilterExpression,
     'tokenize': tokenize,
-    'make_nodelist': make_nodelist,
+    'make_nodelist': make_nodelist
 };
