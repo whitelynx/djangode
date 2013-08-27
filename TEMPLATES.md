@@ -308,19 +308,32 @@ function (parser, token) {
 
 Other differences from Django
 -----------------------------
-### Set tag #
+
+### Script tag ###
+
+The `script/endscript` tag allows you to execute arbitrary JavaScript while
+rendering the template. The `context` variable provides access to the current
+context in these tags. (use `context.get("name")` to retrieve a value, and
+`context.set("name", value)` to store a value)
+
+
+### Set tag ###
+
 The `set/endset` tag allows you to assign any block of text to a variable,
 including HTML and template text.
 
-### Numcomma filter #
+
+### Numcomma filter ###
 
 The `numcomma` filter will add commas to any number as appropriate. This mimcs 
 django.contrib.humanize.intcomma, except that it supports all numeric types.
 
-### For tag
-Djangode exposes {{ forloop.next }} for lookahead in for loops.
 
-### Cycle tag ########
+### For tag
+Djangode exposes `{{ forloop.next }}` for lookahead in for loops.
+
+
+### Cycle tag ###
 
 The cycle tag does not support the legacy notation `{% cycle row1,row2,row3 %}`.
 Use the new and improved syntax described in the django docs:
@@ -328,7 +341,7 @@ Use the new and improved syntax described in the django docs:
 [Documentation for the cycle tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#cycle)
 
 
-### Stringformat filter #######
+### Stringformat filter ###
 
 The `stringformat` filter is based on Alexandru Marasteanu's `sprintf()` function
 and it behaves like regular C-style `sprintf`. Django's `stringformat` tag uses
@@ -339,7 +352,7 @@ won't have any problems, though.
 [sprintf() on Google Code](http://code.google.com/p/sprintf/)
 
 
-### Url Tag #########
+### Url Tag ###
 
 The `url` tag only supports named urls, and you have to register them with the
 template system before you can use them by assigning your urls to the special
@@ -372,7 +385,7 @@ Read more about the url tag here:
 [Django documentation for url tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#url)
 
 
-### Unsupported Tags and Filters ########
+### Unsupported Tags and Filters ###
 
 The plan is to support all Django tags and filters, but currently the filters
 `iriencode` and `unordered_list` and the tags `ssi` and `debug` are not supported.

@@ -767,8 +767,24 @@ var nodes = exports.nodes = {
     SetNode: function (node_list, name) {
         return function (context, callback) {
             node_list.evaluate(context, function (error, result) {
-                context.set(name, result);
+                if(!error) {
+                    context.set(name, result);
+                }
                 callback(error, '');
+            });
+        };
+    },
+
+    ScriptNode: function (node_list) {
+        return function (context, callback) {
+            node_list.evaluate(context, function (error, result) {
+                var output;
+                if(!error) {
+                    // jshint evil: true
+                    var script = new Function('context', result);
+                    output = script(context);
+                }
+                callback(error, output || '');
             });
         };
     }
@@ -1072,5 +1088,12 @@ var tags = exports.tags = {
         var node_list = parser.parse('end' + token.type);
         parser.delete_first_token();
         return nodes.SetNode(node_list, varname);
+    },
+
+    'script': function (parser, token) {
+        var node_list = parser.parse('end' + token.type);
+        parser.delete_first_token();
+        return nodes.ScriptNode(node_list);
     }
+
 };
