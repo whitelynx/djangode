@@ -35,13 +35,23 @@ NOTE:
     url tag relies on app being set in process.djangode_urls
 */
 
+function exprFuncTemplate() {
+    try {
+        IMPLEMENTATION();
+    } catch(exc) {
+        var wrapperExc = new Error(util.format('Error executing expression "%s": %s', TOKENS, exc.message));
+        wrapperExc.innerException = exc;
+        throw wrapperExc;
+    }
+}
+
 function parseExpr(tokens, exprWrapper) {
     exprWrapper = exprWrapper || '%s';
 
     var identifierRE = /^[!-]?([a-zA-Z_$][^!@#%^&*().+=\[\]{}'"\/\\-]*)/;
     var keywordsRE = /^(and|or|not)$/;
 
-    tokens = tokens.map(function(token) {
+    var translatedTokens = tokens.map(function(token) {
         var match = keywordsRE.exec(token);
         if(match && match[0]) {
             switch(match[0]) {
@@ -54,7 +64,7 @@ function parseExpr(tokens, exprWrapper) {
     });
 
     var identifiers = {};
-    tokens.forEach(function(token) {
+    translatedTokens.forEach(function(token) {
         var match = identifierRE.exec(token);
         if(typeof token == 'string' && match) {
             identifiers[match[1]] = true;
@@ -63,9 +73,19 @@ function parseExpr(tokens, exprWrapper) {
     identifiers = Object.keys(identifiers);
 
     var funcDef = identifiers.map(function(identifier) { return util.format('var %s = ctx.get(%j)', identifier, identifier); });
-    funcDef.push(util.format("return " + exprWrapper, tokens.join(' ')));
+    funcDef.push(
+            exprFuncTemplate.toString()
+                .replace('IMPLEMENTATION()', util.format("return " + exprWrapper, translatedTokens.join(' ')))
+                .replace('TOKENS', JSON.stringify(tokens.join(' ')))
+            );
 
-    return new Function('ctx', funcDef.join(';'));
+    try {
+        return new Function('ctx', funcDef.join(';'));
+    } catch(exc) {
+        var wrapperExc = new Error(util.format('Error parsing expression "%s": %s', tokens.join(' '), exc.message));
+        wrapperExc.innerException = exc;
+        throw wrapperExc;
+    }
 }
 
 // Map functions
@@ -336,7 +356,11 @@ var filters = exports.filters = {
     // Extension filters (NOT defined in Django)
 
     range: function (value, arg) {
-        if(value !== null && !Number.isFinite(value))
+        if(value === undefined)
+        {
+            value = 0;
+        }
+        else if(value !== null && !Number.isFinite(value))
         {
             throw new errors.NotNumeric(value);
         }
