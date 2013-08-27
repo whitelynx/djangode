@@ -80,6 +80,7 @@ function parseExpr(tokens, exprWrapper) {
             );
 
     try {
+        // jshint evil: true
         return new Function('ctx', funcDef.join(';'));
     } catch(exc) {
         var wrapperExc = new Error(util.format('Error parsing expression "%s": %s', tokens.join(' '), exc.message));
@@ -562,22 +563,21 @@ var nodes = exports.nodes = {
             // Put this block in front of list.
             context.blocks[name].unshift(node_list);
 
-            // If this is the root template, descend through extended templates and evaluate blocks for overrides.
-            if (!context.extends) {
+            function inner(p, c, idx, block_list, next) {
+                c.evaluate(context, function (error, result) {
+                    context.set('block', { super: result });
+                    next(error, result);
+                });
+            }
 
+            if (!context.extends) {
+                // This is the root template; descend through extended templates and evaluate blocks for overrides.
                 context.push();
 
-                function inner(p, c, idx, block_list, next) {
-                    c.evaluate(context, function (error, result) {
-                        context.set('block', { super: result });
-                        next(error, result);
-                    });
-                }
                 iter.reduce(context.blocks[name], inner, '', function (error, result) {
                     context.pop();
                     callback(error, result);
                 });
-
             } else {
                 // Else, return empty string.
                 callback(false, '');
@@ -607,7 +607,7 @@ var nodes = exports.nodes = {
                 context.autoescaping = before;
                 callback(error, result);
             });
-        }
+        };
     },
 
     FirstOfNode: function (choices) {
@@ -617,7 +617,7 @@ var nodes = exports.nodes = {
                 val = choices[i].resolve(context);
                 if (val) { found = true; break; }
             }
-            callback(false, found ? val : '')
+            callback(false, found ? val : '');
         };
     },
 
@@ -630,7 +630,7 @@ var nodes = exports.nodes = {
                 context.pop();
                 callback(error, result);
             });
-        }
+        };
     },
 
     NowNode: function (format) {
@@ -673,19 +673,19 @@ var nodes = exports.nodes = {
                     context.pop();
 
                     callback(error, output);
-                }
+                };
             }
 
             var loader = require('./loader');
             loader.load_and_render(template, context, callback);
-        }
+        };
     },
 
     LoadNode: function (path, package) {
         return function (context, callback) {
             extend(context.filters, package.filters);
             callback(false, '');
-        }
+        };
     },
 
     TemplateTagNode: function (type) {
@@ -705,7 +705,7 @@ var nodes = exports.nodes = {
             } else {
                 callback(false, bits[type]);
             }
-        }
+        };
     },
 
     SpacelessNode: function (node_list) {
@@ -713,7 +713,7 @@ var nodes = exports.nodes = {
             node_list.evaluate(context, function (error, result) {
                 callback(error, html.strip_spaces_between_tags(result + ""));
             });
-        }
+        };
     },
 
     WidthRatioNode: function (current, max, constant) {
@@ -723,7 +723,7 @@ var nodes = exports.nodes = {
             constant_val = constant.resolve(context);
 
             callback(false, Math.round(current_val / max_val * constant_val) + "");
-        }
+        };
     },
 
     RegroupNode: function (item, key, name) {
@@ -738,18 +738,18 @@ var nodes = exports.nodes = {
                     .map(function (grp) {
                         return {
                                 grouper: grp,
-                                list: list.filter(function (o) { return o[key] === grp })
+                                list: list.filter(function (o) { return o[key] === grp; })
                                 };
                     });
 
             context.set(name, grouped);
             callback(false, '');
-        }
+        };
     },
 
     UrlNode: function (url_name, replacements, item_name) {
         return function (context, callback) {
-            var match = process.djangode_urls[url_name]
+            var match = process.djangode_urls[url_name];
             if (!match) { return callback('no matching urls for ' + url_name); }
 
             var url = string_utils.regex_to_string(match, replacements.map(resolve, context));
@@ -761,7 +761,7 @@ var nodes = exports.nodes = {
             } else {
                 callback(false, url);
             }
-        }
+        };
     },
 
     SetNode: function (node_list, name) {
@@ -770,7 +770,7 @@ var nodes = exports.nodes = {
                 context.set(name, result);
                 callback(error, '');
             });
-        }
+        };
     }
 };
 
@@ -796,8 +796,9 @@ var tags = exports.tags = {
             isReversed = (parts[2] === 'reversed');
 
         var node_list = parser.parse('empty', 'end' + token.type);
+        var empty_list;
         if (parser.next_token().type === 'empty') {
-            var empty_list = parser.parse('end' + token.type);
+            empty_list = parser.parse('end' + token.type);
             parser.delete_first_token();
         }
 
@@ -1041,8 +1042,9 @@ var tags = exports.tags = {
 
         var url_name = parts.shift();
 
+        var item_name;
         if (parts[parts.length - 2] === 'as') {
-            var item_name = parts.pop();
+            item_name = parts.pop();
             parts.pop(); // Remove the 'as'
         }
 
