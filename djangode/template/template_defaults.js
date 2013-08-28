@@ -48,7 +48,7 @@ function exprFuncTemplate() {
 function parseExpr(tokens, exprWrapper) {
     exprWrapper = exprWrapper || '%s';
 
-    var identifierRE = /^[!-]?([a-zA-Z_$][^!@#%^&*().+=\[\]{}'"\/\\-]*)/;
+    var identifierRE = /^([a-zA-Z_$][^!@#%^&*().+=\[\]{}'"\/\\-]*)/;
     var keywordsRE = /^(and|or|not)$/;
 
     var translatedTokens = tokens.map(function(token) {
