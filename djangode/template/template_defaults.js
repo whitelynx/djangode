@@ -829,7 +829,7 @@ var tags = exports.tags = {
 
     'if': function (parser, token) {
 
-        var parts = token.split_contents();
+        var parts = token.expr_split_contents();
 
         // get rid of if keyword
         parts.shift();

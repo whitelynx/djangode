@@ -23,6 +23,26 @@ function smart_split(s) {
     return out;
 }
 
+/* Function: expr_split(s)
+ *      Split a string into expression tokens, leaving quoted phrases together.
+ *      Supports both single and double quotes, and supports escaping
+ *      characters inside strings with backslashes. Quotes will not be removed.
+ *
+ *  Returns:
+ *      Array of strings.
+ */
+function expr_split(s) {
+    // Modified from the above, mostly rewritten for JS expressions.
+    var re = /(\d+(?:\.\d*)?|\.\d+|"(?:[^"\\]*(?:\\.[^"\\]*)*)"|'(?:[^'\\]*(?:\\.[^'\\]*)*)'|===|[|&+-]{2}|[!<>=*\/+-]=|[<>()\[\]!%^|&=*\/+-]|\w[\w\d.]*)/g;
+    var out = [];
+    var m = false;
+
+    while ((m = re.exec(s))) {
+        out.push(m[0]);
+    }
+    return out;
+}
+
 /* Function: add_slashes
  *      Escapes qoutes in string by adding backslashes in front of them.
  */
@@ -259,6 +279,7 @@ function regex_to_string(re, group_replacements) {
 
 module.exports = {
     smart_split: smart_split,
+    expr_split: expr_split,
     add_slashes: add_slashes,
     cap_first: cap_first,
     sprintf: sprintf,

@@ -37,6 +37,9 @@ function Token(type, contents) {
 extend(Token.prototype, {
     split_contents: function() {
         return string_utils.smart_split(this.contents);
+    },
+    expr_split_contents: function() {
+        return string_utils.expr_split(this.contents);
     }
 });
 
