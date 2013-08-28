@@ -39,7 +39,7 @@ function exprFuncTemplate() {
     try {
         IMPLEMENTATION();
     } catch(exc) {
-        var wrapperExc = new Error(util.format('Error executing expression "%s": %s', TOKENS, exc.message));
+        var wrapperExc = new Error(util.format('Error executing expression %j: %s', TOKENS, exc.message));
         wrapperExc.innerException = exc;
         throw wrapperExc;
     }
@@ -72,18 +72,22 @@ function parseExpr(tokens, exprWrapper) {
     });
     identifiers = Object.keys(identifiers);
 
-    var funcDef = identifiers.map(function(identifier) { return util.format('var %s = ctx.get(%j)', identifier, identifier); });
-    funcDef.push(
-            exprFuncTemplate.toString()
-                .replace('IMPLEMENTATION()', util.format("return " + exprWrapper, translatedTokens.join(' ')))
-                .replace('TOKENS', JSON.stringify(tokens.join(' ')))
-            );
+    var funcDef = identifiers.map(function(identifier) {
+        return util.format('var %s = ctx.get(%j)', identifier, identifier);
+    });
+    funcDef.push(util.format("return " + exprWrapper, translatedTokens.join(' ')));
 
     try {
         // jshint evil: true
-        return new Function('ctx', funcDef.join(';'));
+        return (new Function('util', 'ctx',
+                exprFuncTemplate.toString()
+                    .replace(/^function exprFuncTemplate\(\)/, '')
+                    .replace('IMPLEMENTATION()', funcDef.join(';'))
+                    .replace('TOKENS', JSON.stringify(tokens.join(' ')))
+                )).bind(this, util);
     } catch(exc) {
-        var wrapperExc = new Error(util.format('Error parsing expression %j: %s\nTranslated expression: %j', tokens.join(' '), exc.message, translatedTokens.join(' ')));
+        var wrapperExc = new Error(util.format('Error parsing expression %j: %s\nTranslated expression: %j',
+                tokens.join(' '), exc.message, translatedTokens.join(' ')));
         wrapperExc.innerException = exc;
         throw wrapperExc;
     }
