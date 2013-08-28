@@ -309,14 +309,6 @@ function (parser, token) {
 Other differences from Django
 -----------------------------
 
-### Script Tag ###
-
-The `script`/`endscript` tag allows you to execute arbitrary JavaScript while
-rendering the template. The `context` variable provides access to the current
-context in these tags. (use `context.get("name")` to retrieve a value, and
-`context.set("name", value)` to store a value)
-
-
 ### If Tag ###
 
 The `if`/`endif` tag in Djangode supports full JavaScript expressions, as well
@@ -325,7 +317,15 @@ as most `if` expressions possible in Django 1.1:
 [Documentation for the if tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#if)
 
 **Note:** As a side-effect of supporting both syntaxes, you cannot use context
-variables with the names "and", "or", or "not" in the expression.
+variables with the following names in the expression:
+
+- `and`
+- `or`
+- `not`
+- `true`
+- `false`
+- `null`
+- `undefined`
 
 
 ### For Tag ###
@@ -335,16 +335,73 @@ Djangode exposes `{{ forloop.next }}` for lookahead in for loops.
 
 ### Cycle Tag ###
 
-The cycle tag does not support the legacy notation `{% cycle row1,row2,row3 %}`.
+The `cycle` tag does not support the legacy notation `{% cycle row1,row2,row3 %}`.
 Use the new and improved syntax described in the django docs:
 
 [Documentation for the cycle tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#cycle)
+
+
+### Url Tag ###
+
+The `url` tag only supports named urls, and you have to register them with the
+template system before you can use them by assigning your urls to the special
+variable `process.djangode_urls`, like this:
+
+```javascript
+var app = dj.makeApp([
+	['^/item/(\w+)/(\d+)$', function (req, res) { /* ... */ }, 'item']
+]);
+dj.serve(app, 8000);
+process.djangode_urls = app.urls;
+```
+
+Then you can use the `url` tag in any template:
+
+```htmldjango
+{% url "item" 'something',27 %} <!-- outputs: /item/something/27 -->
+```
+
+Like in Django, you can also store the url in a variable and use it later in
+the site.
+
+```htmldjango
+{% url "item" 'something',27 as the_url %}
+<a href="{{ the_url }}">This is a link to {{ the_url }}</a>
+```
+
+Read more about the `url` tag here:
+
+[Django documentation for url tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#url)
 
 
 ### Set Tag ###
 
 The `set`/`endset` tag allows you to assign any block of text to a variable,
 including HTML and template text.
+
+
+### Script Tag ###
+
+The `script`/`endscript` tag allows you to execute arbitrary JavaScript while
+rendering the template. The `context` variable provides access to the current
+context in these tags, and each item in the current context will be copied to
+variables in the scope of the script, and copied back to the context after the
+script completes.
+
+
+### Includescript Tag ###
+
+The `includescript` tag allows you to execute an arbitrary JavaScript file
+from the template path while rendering the template; syntax follows the same
+conventions as Django's `include` tag, including the `with` and `only`
+keywords. The `context` variable provides access to the current context in
+these tags, and each item in the current context will be copied to variables in
+the scope of the script, and copied back to the context after the script
+completes.
+
+Read more about the `include` tag here:
+
+[Django documentation for include tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#include)
 
 
 ### Numcomma Filter ###
@@ -362,39 +419,6 @@ These are not supported by djangode's `stringformat` tag. Most of the time you
 won't have any problems, though.
 
 [sprintf() on Google Code](http://code.google.com/p/sprintf/)
-
-
-### Url Tag ###
-
-The `url` tag only supports named urls, and you have to register them with the
-template system before you can use them by assigning your urls to the special
-variable `process.djangode_urls`, like this:
-
-```javascript
-var app = dj.makeApp([
-	['^/item/(\w+)/(\d+)$', function (req, res) { /* ... */ }, 'item']
-]);
-dj.serve(app, 8000);
-process.djangode_urls = app.urls;
-```
-
-Then you can use the url tag in any template:
-
-```htmldjango
-{% url "item" 'something',27 %} <!-- outputs: /item/something/27 -->
-```
-
-Like in django you can also store the url in a variable and use it later in the
-site.
-
-```htmldjango
-{% url "item" 'something',27 as the_url %}
-<a href="{{ the_url }}">This is a link to {{ the_url }}</a>
-```
-
-Read more about the url tag here:
-
-[Django documentation for url tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#url)
 
 
 ### Unsupported Tags and Filters ###

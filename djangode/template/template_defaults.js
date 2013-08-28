@@ -1,7 +1,9 @@
-/*jslint eqeqeq: true, undef: true, regexp: false */
+/*jslint laxbreak: true, eqeqeq: true, undef: true, regexp: false */
 /*global require, process, exports, escape */
 
+var fs = require('fs');
 var util = require('util');
+
 var string_utils = require('../utils/string');
 var date_utils = require('../utils/date');
 var html = require('../utils/html');
@@ -49,10 +51,11 @@ function parseExpr(tokens, exprWrapper) {
     exprWrapper = exprWrapper || '%s';
 
     var identifierRE = /^([a-zA-Z_$][^!@#%^&*().+=\[\]{}'"\/\\-]*)$/;
-    var keywordsRE = /^(and|or|not)$/;
+    var translatedKeywordsRE = /^(and|or|not)$/;
+    var untranslatedKeywordsRE = /^(true|false|null|undefined)$/;
 
     var translatedTokens = tokens.map(function(token) {
-        var match = keywordsRE.exec(token);
+        var match = translatedKeywordsRE.exec(token);
         if(match && match[0]) {
             switch(match[0]) {
                 case 'and': return '&&';
@@ -66,7 +69,7 @@ function parseExpr(tokens, exprWrapper) {
     var identifiers = {};
     translatedTokens.forEach(function(token) {
         var match = identifierRE.exec(token);
-        if(typeof token == 'string' && match) {
+        if(typeof token == 'string' && match && !untranslatedKeywordsRE.test(match[1])) {
             identifiers[match[1]] = true;
         }
     });
@@ -266,7 +269,7 @@ var filters = exports.filters = {
         return value;
     },
     slice: function (value, arg) {
-        if (!(value instanceof Array)) { return []; }
+        if (!(Array.isArray(value) || typeof value == 'string')) { return []; }
         var parts = (arg || '').split(/:/g);
 
         if (parts[1] === '') {
@@ -277,8 +280,9 @@ var filters = exports.filters = {
         if (!parts[2]) {
             return value.slice(parts[0], parts[1]);
         }
+
         var out = [], i = parts[0], end = parts[1];
-        for (;i < end; i += parts[2]) {
+        for (;i < end; i += Number(parts[2])) {
             out.push(value[i]);
         }
         return out;
@@ -779,19 +783,137 @@ var nodes = exports.nodes = {
         };
     },
 
-    ScriptNode: function (node_list) {
-        return function (context, callback) {
-            node_list.evaluate(context, function (error, result) {
+    ScriptNode: function (node_list)
+    {
+        return function (context, callback)
+        {
+            node_list.evaluate(context, function (error, result)
+            {
+                var contextVarDefs = [];
+                context.keys().forEach(function eachKey(key)
+                {
+                    contextVarDefs.push(util.format('var %s = context.get(%j)', key, key));
+                });
+
+                var contextVarAssigns = [];
+                context.keys().forEach(function eachKey(key)
+                {
+                    contextVarAssigns.push(util.format('context.set(%j, %s)', key, key));
+                });
+
                 var output;
                 if(!error) {
                     // jshint evil: true
-                    var script = new Function('context', result);
+                    var script = new Function('context', contextVarDefs.concat(result).concat(contextVarAssigns).join(';'));
                     output = script(context);
                 }
                 callback(error, output || '');
             });
         };
+    },
+
+    IncludeScriptNode: function (scriptName, contextVars, only)
+    {
+        return function (context, callback)
+        {
+            onRenderFinished = context;
+
+            var scriptPath = scriptName.resolve(context);
+
+            if(contextVars)
+            {
+                var newContext = {};
+
+                if(only)
+                {
+                    // Mask each existing key by overwriting it with null.
+                    context.keys().forEach(function eachKey(key)
+                    {
+                        newContext[key] = null;
+                    });
+                }
+
+                // Copy context variable assignments into newContext.
+                for(var key in contextVars)
+                {
+                    var value = contextVars[key];
+                    newContext[key] = value.resolve(context);
+                }
+
+                context.push(newContext);
+
+                onRenderFinished = function onRenderFinished(error, output)
+                {
+                    context.pop();
+                    callback(error, output);
+                };
+            }
+
+            var contextVarDefs = [];
+            context.keys().forEach(function eachKey(key)
+            {
+                contextVarDefs.push(util.format('var %s = context.get(%j)', key, key));
+            });
+
+            var contextVarAssigns = [];
+            context.keys().forEach(function eachKey(key)
+            {
+                contextVarAssigns.push(util.format('context.set(%j, %s)', key, key));
+            });
+
+            var loader = require('./loader');
+
+            paths.find_file(scriptPath, loader.get_path(),
+                    function(error, fullPath, stats)
+                    {
+                        if(error instanceof errors.FileNotFound)
+                        {
+                            paths.find_file(scriptPath + '.js', loader.get_path(),
+                                    function(error, fullPath, stats)
+                                    {
+                                        if(error)
+                                        {
+                                            callback(error, '');
+                                        }
+                                        else
+                                        {
+                                            loadAndRunScript(fullPath);
+                                        }
+                                    });
+                        }
+                        else if(error)
+                        {
+                            callback(error, '');
+                        }
+                        else
+                        {
+                            loadAndRunScript(fullPath);
+                        }
+                    });
+
+            function loadAndRunScript(scriptPath)
+            {
+                fs.readFile(scriptPath, function(error, data)
+                {
+                    var output;
+                    if(!error)
+                    {
+                        // jshint evil: true
+                        var script = new Function('context',
+                                contextVarDefs
+                                    .concat(data)
+                                    .concat(contextVarAssigns)
+                                    .join(';')
+                                );
+                        output = script(context);
+                    }
+                    callback(error, output || '');
+                });
+            }
+
+        };
     }
+
 };
 
 var tags = exports.tags = {
@@ -1005,7 +1127,8 @@ var tags = exports.tags = {
                 var equal_idx = arg.indexOf('=');
                 if (equal_idx < 1) {
                     throw new errors.TemplateError(parser.filename, token,
-                            'unexpected syntax in "include" tag. Expected "=" in variable assignment');
+                            'unexpected syntax in "include" tag. Expected "=" in variable assignment'
+                            + '\nEnsure there are no spaces around the "=".');
                 }
 
                 var key = arg.substring(0, equal_idx);
@@ -1098,6 +1221,51 @@ var tags = exports.tags = {
         var node_list = parser.parse('end' + token.type);
         parser.delete_first_token();
         return nodes.ScriptNode(node_list);
+    },
+
+    'includescript': function (parser, token) {
+        var parts = token.split_contents();
+
+        if (parts.length < 2) {
+            throw new errors.TemplateError(parser.filename, token,
+                    'unexpected syntax in "include" tag. Expected template path after "include"');
+        }
+
+        var template = parser.make_filterexpression(parts[1]);
+        var contextVars = {};
+        var only = false;
+
+        if (parts.length > 2) {
+            if (parts[2] != 'with') {
+                throw new errors.TemplateError(parser.filename, token,
+                        'unexpected syntax in "include" tag. Expected "with" after template path');
+            }
+
+            var remaining = parts.slice(3);
+
+            // If 'only' is specified, set the flag and remove that argument.
+            var only_idx = remaining.indexOf('only');
+            if (only_idx > 0) {
+                only = true;
+                remaining.splice(only_idx, 1);
+            }
+
+            remaining.forEach(function eachArg(arg) {
+                var equal_idx = arg.indexOf('=');
+                if (equal_idx < 1) {
+                    throw new errors.TemplateError(parser.filename, token,
+                            'unexpected syntax in "include" tag. Expected "=" in variable assignment'
+                            + '\nEnsure there are no spaces around the "=".');
+                }
+
+                var key = arg.substring(0, equal_idx);
+                var value = arg.substring(equal_idx + 1);
+
+                contextVars[key] = parser.make_filterexpression(value);
+            });
+        }
+
+        return nodes.IncludeScriptNode(template, contextVars, only);
     }
 
 };
