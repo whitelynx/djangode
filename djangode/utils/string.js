@@ -17,12 +17,11 @@ function smart_split(s) {
     out = [],
     m = false;
 
-    while (m = re.exec(s)) {
+    while ((m = re.exec(s))) {
         out.push(m[0]);
     }
     return out;
 }
-exports.smart_split = smart_split;
 
 /* Function: add_slashes
  *      Escapes qoutes in string by adding backslashes in front of them.
@@ -30,7 +29,6 @@ exports.smart_split = smart_split;
 function add_slashes(s) {
     return s.replace(/['"]/g, "\\$&");
 }
-exports.add_slashes = add_slashes;
 
 /* Function: cap_first
  *      Capitalizes first letter of string
@@ -38,7 +36,6 @@ exports.add_slashes = add_slashes;
 function cap_first(s) {
     return s[0].toUpperCase() + s.substring(1);
 }
-exports.cap_first = cap_first;
 
 
 /*************************************************************************
@@ -71,16 +68,16 @@ function str_repeat(i, m) { for (var o = []; m > 0; o[--m] = i); return(o.join('
 function sprintf() {
     var i = 0, a, f = arguments[i++], o = [], m, p, c, x;
     while (f) {
-        if (m = /^[^\x25]+/.exec(f)) o.push(m[0]);
-        else if (m = /^\x25{2}/.exec(f)) o.push('%');
-        else if (m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(f)) {
-            if (((a = arguments[m[1] || i++]) == null) || (a == undefined)) throw("Too few arguments.");
+        if ((m = /^[^\x25]+/.exec(f))) o.push(m[0]);
+        else if ((m = /^\x25{2}/.exec(f))) o.push('%');
+        else if ((m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(f))) {
+            if (((a = arguments[m[1] || i++]) === null) || (a === undefined)) throw("Too few arguments.");
             if (/[^s]/.test(m[7]) && (typeof(a) != 'number'))
                 throw("Expecting number but found " + typeof(a));
             switch (m[7]) {
                 case 'b': a = a.toString(2); break;
                 case 'c': a = String.fromCharCode(a); break;
-                case 'd': a = parseInt(a); break;
+                case 'd': a = parseInt(a, 10); break;
                 case 'e': a = m[6] ? a.toExponential(m[6]) : a.toExponential(); break;
                 case 'f': a = m[6] ? parseFloat(a).toFixed(m[6]) : parseFloat(a); break;
                 case 'o': a = a.toString(8); break;
@@ -100,33 +97,28 @@ function sprintf() {
     }
     return o.join('');
 }
-/*************************************************************************/
 
-exports.sprintf = sprintf;
-exports.str_repeat = str_repeat;
-
-/*************************************************************************
- * titleCaps from http://ejohn.org/files/titleCaps.js (by John Resig)
+/******************************************************************************
+ * titleCaps from http://ejohn.org/files/titleCaps.js (by John Resig), modified
  */
 
 var small = "(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|v[.]?|via|vs[.]?)";
 var punct = "([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]*)";
+var split = /[:.;?!] |(?: |^)["Ò]/g;
+var word = /\b([A-Za-z][a-z.'Õ]*)\b/g;
+var wordWithPunct = /[A-Za-z]\.[A-Za-z]/;
 
 function titleCaps(title) {
-    var parts = [], split = /[:.;?!] |(?: |^)["Ò]/g, index = 0;
+    var parts = [], index = 0;
 
     while (true) {
         var m = split.exec(title);
 
         parts.push(title.substring(index, m ? m.index : title.length)
-                .replace(/\b([A-Za-z][a-z.'Õ]*)\b/g, function(all) {
-                    return /[A-Za-z]\.[A-Za-z]/.test(all) ? all : upper(all);
-                })
+                .replace(word, capitalizeIfNoPunct)
                 .replace(RegExp("\\b" + small + "\\b", "ig"), lower)
-                .replace(RegExp("^" + punct + small + "\\b", "ig"), function(all, punct, word) {
-                    return punct + upper(word);
-                })
-                .replace(RegExp("\\b" + small + punct + "$", "ig"), upper));
+                .replace(RegExp("^" + punct + small + "\\b", "ig"), capitalizeAfterPunct)
+                .replace(RegExp("\\b" + small + punct + "$", "ig"), capitalize));
 
         index = split.lastIndex;
 
@@ -142,17 +134,23 @@ function titleCaps(title) {
             .replace(/\b(AT&T|Q&A)\b/ig, function(all) {
                 return all.toUpperCase();
             });
-};
+}
 
 function lower(word) {
     return word.toLowerCase();
 }
 
-function upper(word) {
+function capitalize(word) {
     return word.substr(0, 1).toUpperCase() + word.substr(1);
 }
 
-exports.titleCaps = titleCaps;
+function capitalizeIfNoPunct(all) {
+    return wordWithPunct.test(all) ? all : capitalize(all);
+}
+
+function capitalizeAfterPunct(all, punct, word) {
+    return punct + capitalize(word);
+}
 
 
 /*************************************************************************/
@@ -163,7 +161,6 @@ function center(s, width) {
     var left = width - (s.length + right);
     return str_repeat(' ', left) + s + str_repeat(' ', right);
 }
-exports.center = center;
 
 
 /*************************************************************************/
@@ -203,7 +200,6 @@ function wordwrap(str, int_width, str_break, cut) {
     }
     return r.join("\n");
 }
-exports.wordwrap = wordwrap;
 
 
 // replace groups in regex like string with replacer
@@ -233,7 +229,7 @@ function replace_groups(input, replacer) {
     return out;
 }
 
-exports.regex_to_string = function (re, group_replacements) {
+function regex_to_string(re, group_replacements) {
     var s = re.toString();
 
     // remove leading and trailing slashes
@@ -246,7 +242,10 @@ exports.regex_to_string = function (re, group_replacements) {
     s = s.replace(/\^|\$|\*|\+|\?|\.|\\cX|\\xhh|\\uhhhh|\\./g, function (m) {
         if (m[0] === '\\') {
             if (m.substr(1).match(/f|r|n|t|v|\d+|b|s|S|w|W|d|D|b|B/)) { return ''; }
-            if (m.substr(1).match(/c.|x..|u..../)) { return eval("'" + m + "'"); }
+            if (m.substr(1).match(/c.|x..|u..../)) {
+                // jshint evil: true
+                return eval("'" + m + "'");
+            }
             return m[1];
         }
         return '';
@@ -257,3 +256,16 @@ exports.regex_to_string = function (re, group_replacements) {
 
     return s;
 }
+
+module.exports = {
+    smart_split: smart_split,
+    add_slashes: add_slashes,
+    cap_first: cap_first,
+    sprintf: sprintf,
+    str_repeat: str_repeat,
+    capitalize: capitalize,
+    titleCaps: titleCaps,
+    center: center,
+    wordwrap: wordwrap,
+    regex_to_string: regex_to_string
+};
