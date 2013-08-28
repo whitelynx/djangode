@@ -3,6 +3,10 @@
 
 var util = require('util');
 
+
+// regular expression from django/utils/text.py in Django project.
+var smartSplitRE = /([^\s"]*"(?:[^"\\]*(?:\\.[^"\\]*)*)"\S*|[^\s']*'(?:[^'\\]*(?:\\.[^'\\]*)*)'\S*|\S+)/g;
+
 /* Function: smart_split(s)
  *      Split a string by spaces, leaving qouted phrases together. Supports both
  *      single and double qoutes, and supports escaping strings qoutes with
@@ -12,16 +16,19 @@ var util = require('util');
  *      Array of strings.
  */
 function smart_split(s) {
-    // regular expression from django/utils/text.py in Django project.
-    var re = /([^\s"]*"(?:[^"\\]*(?:\\.[^"\\]*)*)"\S*|[^\s']*'(?:[^'\\]*(?:\\.[^'\\]*)*)'\S*|\S+)/g,
-    out = [],
-    m = false;
+    var out = [];
+    var m = false;
 
-    while ((m = re.exec(s))) {
+    smartSplitRE.lastIndex = 0;
+    while ((m = smartSplitRE.exec(s))) {
         out.push(m[0]);
     }
     return out;
 }
+
+
+// Modified from the above, mostly rewritten for JS expressions.
+var exprRE = /(\d+(?:\.\d*)?|\.\d+|"(?:[^"\\]*(?:\\.[^"\\]*)*)"|'(?:[^'\\]*(?:\\.[^'\\]*)*)'|===|[|&+-]{2}|[!<>=*\/+-]=|[<>()\[\].!%^|&=*\/+-]|[a-zA-Z_$][^\s!@#%^&*().+=\[\]{}'"\/\\-]*)/g;
 
 /* Function: expr_split(s)
  *      Split a string into expression tokens, leaving quoted phrases together.
@@ -32,23 +39,26 @@ function smart_split(s) {
  *      Array of strings.
  */
 function expr_split(s) {
-    // Modified from the above, mostly rewritten for JS expressions.
-    var re = /(\d+(?:\.\d*)?|\.\d+|"(?:[^"\\]*(?:\\.[^"\\]*)*)"|'(?:[^'\\]*(?:\\.[^'\\]*)*)'|===|[|&+-]{2}|[!<>=*\/+-]=|[<>()\[\].!%^|&=*\/+-]|[a-zA-Z_$][^\s!@#%^&*().+=\[\]{}'"\/\\-]*)/g;
     var out = [];
     var m = false;
 
-    while ((m = re.exec(s))) {
+    exprRE.lastIndex = 0;
+    while ((m = exprRE.exec(s))) {
         out.push(m[0]);
     }
     return out;
 }
 
+
+var quotesRE = /['"]/g;
+
 /* Function: add_slashes
  *      Escapes qoutes in string by adding backslashes in front of them.
  */
 function add_slashes(s) {
-    return s.replace(/['"]/g, "\\$&");
+    return s.replace(quotesRE, "\\$&");
 }
+
 
 /* Function: cap_first
  *      Capitalizes first letter of string
