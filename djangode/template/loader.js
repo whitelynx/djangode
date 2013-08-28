@@ -31,7 +31,7 @@ function load(name, callback)
 {
     if (!callback) { throw 'loader.load() must be called with a callback'; }
 
-    if (cache_enabled && cache[name] != undefined)
+    if (cache_enabled && cache[name] !== undefined)
     {
         callback(null, cache[name]);
     }
@@ -189,7 +189,7 @@ FSTemplate.prototype.load = function (callback) {
                                 });
                             }
 
-                            callback(error, template)
+                            callback(error, template);
                         });
             });
 };
