@@ -309,31 +309,31 @@ function (parser, token) {
 Other differences from Django
 -----------------------------
 
-### Script tag ###
+### Script Tag ###
 
-The `script/endscript` tag allows you to execute arbitrary JavaScript while
+The `script`/`endscript` tag allows you to execute arbitrary JavaScript while
 rendering the template. The `context` variable provides access to the current
 context in these tags. (use `context.get("name")` to retrieve a value, and
 `context.set("name", value)` to store a value)
 
 
-### Set tag ###
+### If Tag ###
 
-The `set/endset` tag allows you to assign any block of text to a variable,
-including HTML and template text.
+The `if`/`endif` tag in Djangode supports full JavaScript expressions, as well
+as most `if` expressions possible in Django 1.1:
+
+[Documentation for the if tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#if)
+
+**Note:** As a side-effect of supporting both syntaxes, you cannot use context
+variables with the names "and", "or", or "not" in the expression.
 
 
-### Numcomma filter ###
+### For Tag ###
 
-The `numcomma` filter will add commas to any number as appropriate. This mimcs 
-django.contrib.humanize.intcomma, except that it supports all numeric types.
-
-
-### For tag
 Djangode exposes `{{ forloop.next }}` for lookahead in for loops.
 
 
-### Cycle tag ###
+### Cycle Tag ###
 
 The cycle tag does not support the legacy notation `{% cycle row1,row2,row3 %}`.
 Use the new and improved syntax described in the django docs:
@@ -341,7 +341,19 @@ Use the new and improved syntax described in the django docs:
 [Documentation for the cycle tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#cycle)
 
 
-### Stringformat filter ###
+### Set Tag ###
+
+The `set`/`endset` tag allows you to assign any block of text to a variable,
+including HTML and template text.
+
+
+### Numcomma Filter ###
+
+The `numcomma` filter will add commas to any number as appropriate. This mimcs 
+django.contrib.humanize.intcomma, except that it supports all numeric types.
+
+
+### Stringformat Filter ###
 
 The `stringformat` filter is based on Alexandru Marasteanu's `sprintf()` function
 and it behaves like regular C-style `sprintf`. Django's `stringformat` tag uses
