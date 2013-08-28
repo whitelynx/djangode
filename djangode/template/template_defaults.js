@@ -83,7 +83,7 @@ function parseExpr(tokens, exprWrapper) {
         // jshint evil: true
         return new Function('ctx', funcDef.join(';'));
     } catch(exc) {
-        var wrapperExc = new Error(util.format('Error parsing expression "%s": %s', tokens.join(' '), exc.message));
+        var wrapperExc = new Error(util.format('Error parsing expression %j: %s\nTranslated expression: %j', tokens.join(' '), exc.message, translatedTokens.join(' ')));
         wrapperExc.innerException = exc;
         throw wrapperExc;
     }
