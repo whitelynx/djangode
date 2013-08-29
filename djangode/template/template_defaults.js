@@ -277,17 +277,20 @@ var filters = exports.filters = {
         if (!(Array.isArray(value) || typeof value == 'string')) { return []; }
         var parts = (arg || '').split(/:/g);
 
-        if (parts[1] === '') {
-            parts[1] = value.length;
-        }
-        parts = parts.map(Number);
+        parts = parts.map(function(part) {
+            if(part === '')
+            {
+                return undefined;
+            }
+            return Number(part);
+        });
 
         if (!parts[2]) {
             return value.slice(parts[0], parts[1]);
         }
 
         var out = [], i = parts[0], end = parts[1];
-        for (;i < end; i += Number(parts[2])) {
+        for (;i < end; i += parts[2]) {
             out.push(value[i]);
         }
         return out;
