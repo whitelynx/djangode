@@ -269,7 +269,7 @@ var filters = exports.filters = {
         safety.is_safe = true;
         return value;
     },
-    safeseq: function (value, arg) {
+    safeseq: function (value, arg, safety) {
         safety.is_safe = true;
         return value;
     },
