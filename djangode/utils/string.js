@@ -28,7 +28,7 @@ function smart_split(s) {
 
 
 // Modified from the above, mostly rewritten for JS expressions.
-var exprRE = /(\d+(?:\.\d*)?|\.\d+|"(?:[^"\\]*(?:\\.[^"\\]*)*)"|'(?:[^'\\]*(?:\\.[^'\\]*)*)'|===|[|&+-]{2}|[!<>=*\/+-]=|[<>()\[\].!%^|&=*\/+-]|[a-zA-Z_$][^\s!@#%^&*().+=\[\]{}'"\/\\-]*)/g;
+var exprRE = /(\d+(?:\.\d*)?|\.\d+|"(?:[^"\\]*(?:\\.[^"\\]*)*)"|'(?:[^'\\]*(?:\\.[^'\\]*)*)'|[!=]==|[|&+-]{2}|[!<>=*\/+-]=|[<>()\[\].!%^|&=*\/+-]|[a-zA-Z_$][^\s!@#%^&*().+=\[\]{}'"\/\\-]*)/g;
 
 /* Function: expr_split(s)
  *      Split a string into expression tokens, leaving quoted phrases together.
