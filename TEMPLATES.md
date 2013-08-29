@@ -404,6 +404,12 @@ Read more about the `include` tag here:
 [Django documentation for include tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#include)
 
 
+### JSON Filter ###
+
+The `json` filter will convert any value to its JSON representation using
+`JSON.stringify()`.
+
+
 ### Numcomma Filter ###
 
 The `numcomma` filter will add commas to any number as appropriate. This mimcs 

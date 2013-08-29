@@ -262,6 +262,19 @@ testcase('numcomma');
     test('insert commas in large numbers', function(){
         assertEquals('1,000', filters.numcomma(1000));
     });
+testcase('json');
+    test('convert value to JSON', function(){
+        var value = {
+            items: [1, 2, 3, 4],
+            noitems: [],
+            obj: { a: 1, b: 2, c: { d: 23, e: { f: 'laks' } } },
+            nested: { a: { foo: 'FOO', bar: 'BAR' }, b: { fez: 'FEZ', bleh: 'BLEH' } },
+            number: 3,
+            null_variable: null
+        };
+        var expected = '{"items":[1,2,3,4],"noitems":[],"obj":{"a":1,"b":2,"c":{"d":23,"e":{"f":"laks"}}},"nested":{"a":{"foo":"FOO","bar":"BAR"},"b":{"fez":"FEZ","bleh":"BLEH"}},"number":3,"null_variable":null}';
+        assertEquals(expected, filters.json(value));
+    });
 testcase('phone2numeric')
     test('convert letters to numbers phone number style', function () {
         assertEquals('800-2655328', filters.phone2numeric('800-COLLECT'));

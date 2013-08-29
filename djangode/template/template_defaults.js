@@ -394,6 +394,11 @@ var filters = exports.filters = {
         var parts = value.toString().split(".");
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return parts.join(".");
+    },
+
+    // Render a value as JSON
+    json: function (value, arg) {
+        return JSON.stringify(value);
     }
 };
 
