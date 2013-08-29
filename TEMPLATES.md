@@ -309,12 +309,14 @@ function (parser, token) {
 Other differences from Django
 -----------------------------
 
-### If Tag ###
+### Changes To Existing Tags ###
+
+#### `if`
 
 The `if`/`endif` tag in Djangode supports full JavaScript expressions, as well
 as most `if` expressions possible in Django 1.1:
 
-[Documentation for the if tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#if)
+[Django 1.1 documentation for the if tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#if)
 
 **Note:** As a side-effect of supporting both syntaxes, you cannot use context
 variables with the following names in the expression:
@@ -328,20 +330,20 @@ variables with the following names in the expression:
 - `undefined`
 
 
-### For Tag ###
+#### `for`
 
 Djangode exposes `{{ forloop.next }}` for lookahead in for loops.
 
 
-### Cycle Tag ###
+#### `cycle`
 
 The `cycle` tag does not support the legacy notation `{% cycle row1,row2,row3 %}`.
 Use the new and improved syntax described in the django docs:
 
-[Documentation for the cycle tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#cycle)
+[Django 1.1 documentation for the cycle tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#cycle)
 
 
-### Url Tag ###
+#### `url`
 
 The `url` tag only supports named urls, and you have to register them with the
 template system before you can use them by assigning your urls to the special
@@ -369,18 +371,20 @@ the site.
 <a href="{{ the_url }}">This is a link to {{ the_url }}</a>
 ```
 
-Read more about the `url` tag here:
+Read more about Django 1.1's `url` tag here:
 
-[Django documentation for url tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#url)
+[Django 1.1 documentation for the url tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#url)
 
 
-### Set Tag ###
+### Added Tags ###
+
+#### `set`
 
 The `set`/`endset` tag allows you to assign any block of text to a variable,
 including HTML and template text.
 
 
-### Script Tag ###
+#### `script`
 
 The `script`/`endscript` tag allows you to execute arbitrary JavaScript while
 rendering the template. The `context` variable provides access to the current
@@ -389,7 +393,7 @@ variables in the scope of the script, and copied back to the context after the
 script completes.
 
 
-### Includescript Tag ###
+#### `includescript`
 
 The `includescript` tag allows you to execute an arbitrary JavaScript file
 from the template path while rendering the template; syntax follows the same
@@ -399,24 +403,39 @@ these tags, and each item in the current context will be copied to variables in
 the scope of the script, and copied back to the context after the script
 completes.
 
-Read more about the `include` tag here:
+Read more about Django 1.1's `include` tag here:
 
-[Django documentation for include tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#include)
+[Django 1.1 documentation for the include tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#include)
 
 
-### JSON Filter ###
+### Changes To Existing Filters ###
+
+#### `slice`
+
+Unlike the `slice` filter in Django 1.1, Djangode's version of the `slice`
+filter works on both lists (arrays) _and_ strings.
+
+Read more about Django 1.1's `slice` tag here:
+
+[Django 1.1 documentation for the slice tag](http://docs.djangoproject.com/en/1.1/ref/templates/builtins/#slice)
+
+
+### Added Filters ###
+
+
+#### `json`
 
 The `json` filter will convert any value to its JSON representation using
 `JSON.stringify()`.
 
 
-### Numcomma Filter ###
+#### `numcomma`
 
 The `numcomma` filter will add commas to any number as appropriate. This mimcs 
 django.contrib.humanize.intcomma, except that it supports all numeric types.
 
 
-### Stringformat Filter ###
+#### `stringformat`
 
 The `stringformat` filter is based on Alexandru Marasteanu's `sprintf()` function
 and it behaves like regular C-style `sprintf`. Django's `stringformat` tag uses
