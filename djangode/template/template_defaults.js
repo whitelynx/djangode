@@ -69,7 +69,12 @@ function parseExpr(tokens, exprWrapper) {
     var identifiers = {};
     translatedTokens.forEach(function(token) {
         var match = identifierRE.exec(token);
-        if(typeof token == 'string' && match && !untranslatedKeywordsRE.test(match[1])) {
+
+        if(typeof token == 'string' && match
+                && !untranslatedKeywordsRE.test(match[1])
+                && !(match[1] in global)
+                )
+        {
             identifiers[match[1]] = true;
         }
     });
@@ -807,7 +812,12 @@ var nodes = exports.nodes = {
                     try
                     {
                         // jshint evil: true
-                        var script = new Function('context', contextVarDefs.concat(result).concat(contextVarAssigns).join(';'));
+                        var script = new Function('context',
+                                contextVarDefs
+                                    .concat(result)
+                                    .concat(contextVarAssigns)
+                                    .join(';')
+                                );
                         output = script(context);
                     }
                     catch(exc)
