@@ -802,10 +802,18 @@ var nodes = exports.nodes = {
                 });
 
                 var output;
-                if(!error) {
-                    // jshint evil: true
-                    var script = new Function('context', contextVarDefs.concat(result).concat(contextVarAssigns).join(';'));
-                    output = script(context);
+                if(!error)
+                {
+                    try
+                    {
+                        // jshint evil: true
+                        var script = new Function('context', contextVarDefs.concat(result).concat(contextVarAssigns).join(';'));
+                        output = script(context);
+                    }
+                    catch(exc)
+                    {
+                        error = exc;
+                    }
                 }
                 callback(error, output || '');
             });
@@ -898,14 +906,21 @@ var nodes = exports.nodes = {
                     var output;
                     if(!error)
                     {
-                        // jshint evil: true
-                        var script = new Function('context',
-                                contextVarDefs
-                                    .concat(data)
-                                    .concat(contextVarAssigns)
-                                    .join(';')
-                                );
-                        output = script(context);
+                        try
+                        {
+                            // jshint evil: true
+                            var script = new Function('context',
+                                    contextVarDefs
+                                        .concat(data)
+                                        .concat(contextVarAssigns)
+                                        .join(';')
+                                    );
+                            output = script(context);
+                        }
+                        catch(exc)
+                        {
+                            error = exc;
+                        }
                     }
                     callback(error, output || '');
                 });
