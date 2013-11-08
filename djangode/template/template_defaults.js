@@ -937,7 +937,8 @@ var nodes = exports.nodes = {
                         }
                         catch(exc)
                         {
-                            error = exc;
+                            error = new Error(util.format("Error running script %j!", scriptPath));
+                            error.innerExc = exc;
                         }
                     }
                     callback(error, output || '');
